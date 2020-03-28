@@ -16,7 +16,7 @@ client = gspread.authorize(creds)
 
 # Find a workbook by name and open the first sheet
 # Make sure you use the right name here.
-sheet = client.open("Tablet Database Dev")
+sheet = client.open("COVID-19 Tablet DB")
 
 # Extract and print all of the values
 worksheet = sheet.get_worksheet(0)
