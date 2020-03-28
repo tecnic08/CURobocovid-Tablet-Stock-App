@@ -73,14 +73,14 @@ class App(tk.Frame):
         self.serialNumber_string = tk.StringVar()
         self.phoneNumber_string = tk.StringVar()
         self.iccid_string = tk.StringVar()
-        self.location_sting = tk.StringVar()
+        self.location_string = tk.StringVar()
 
         # Entries Field
         self.imei = tk.Entry(self, textvariable=self.imei_string, width=20, state=tk.DISABLED)
         self.serialNo = tk.Entry(self, textvariable=self.serialNumber_string, width=20)
         self.phoneNo = tk.Entry(self, textvariable=self.phoneNumber_string, width=20)
         self.iccid = tk.Entry(self, textvariable=self.iccid_string, width=20)
-        self.location = tk.Entry(self, textvariable=self.location_sting, width=20)
+        self.location = tk.Entry(self, textvariable=self.location_string, width=20)
 
         # Field Properties
         self.imei.grid(row=4, column=1, sticky="we")
@@ -161,7 +161,7 @@ class App(tk.Frame):
             self.serialNumber_string.set(row[2])
             self.phoneNumber_string.set(row[3])
             self.iccid_string.set(row[4])
-            self.location_sting.set(row[5])
+            self.location_string.set(row[5])
 
          # there are some cells that is empty, this is normal
         except IndexError:
@@ -182,7 +182,7 @@ class App(tk.Frame):
             worksheet.update_cell(self.target_search_loc.row, 3, self.serialNumber_string.get()) #serialNumber
             worksheet.update_cell(self.target_search_loc.row, 4, self.phoneNumber_string.get()) #phoneNumber
             worksheet.update_cell(self.target_search_loc.row, 5, self.iccid_string.get()) #iccid
-            worksheet.update_cell(self.target_search_loc.row, 6, self.location_sting.get()) #location
+            worksheet.update_cell(self.target_search_loc.row, 6, self.location_string.get()) #location
             
             self.target_search_loc = None
             self.statusText.set("Updated " + self.imei_string.get())
