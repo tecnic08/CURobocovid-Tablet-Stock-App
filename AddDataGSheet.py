@@ -7,22 +7,23 @@ from csv import writer
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from print import *
+from config import *
 
 print("Connecting to Google Drive API...")
 
 # use creds to create a client to interact with the Google Drive API
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name(clientCredentialFile, scope)
 client = gspread.authorize(creds)
 
 # Find a workbook by name and open the first sheet
 # Make sure you use the right name here.
-sheet = client.open("Tablet Database Dev")
+sheet = client.open(useDatabase)
 
 # Extract and print all of the values
 worksheet = sheet.get_worksheet(0)
 
-print("Connected!!")
+print("Connected to " + useDatabase)
 
 class App(tk.Frame):
     def __init__(self, master=None):
@@ -64,7 +65,7 @@ class App(tk.Frame):
 
         # Print Button
         self.printCheck = tk.IntVar()
-        checkButton = tk.Checkbutton(self, text="Print Label", variable=self.printCheck)
+        checkButton = tk.Checkbutton(self, text="Print Label (2)", variable=self.printCheck)
         checkButton.grid(row=5, column = 1, sticky="e")
 
         # Clear Button

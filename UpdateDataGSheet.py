@@ -6,22 +6,23 @@ import time
 from csv import writer
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+from config import *
 
 print("Connecting to Google Drive API...")
 
 # use creds to create a client to interact with the Google Drive API
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name(clientCredentialFile, scope)
 client = gspread.authorize(creds)
 
 # Find a workbook by name and open the first sheet
 # Make sure you use the right name here.
-sheet = client.open("COVID-19 Tablet DB")
+sheet = client.open(useDatabase)
 
 # Extract and print all of the values
 worksheet = sheet.get_worksheet(0)
 
-print("Connected!!")
+print("Connected to " + useDatabase)
 
 column_definition = {
     1: 'Updated Time',
