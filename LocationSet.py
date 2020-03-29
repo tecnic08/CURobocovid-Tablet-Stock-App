@@ -6,6 +6,7 @@ import time
 from csv import writer
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+from print import *
 
 print("Connecting to Google Drive API...")
 
@@ -16,7 +17,7 @@ client = gspread.authorize(creds)
 
 # Find a workbook by name and open the first sheet
 # Make sure you use the right name here.
-sheet = client.open("COVID-19 Tablet DB")
+sheet = client.open("Tablet Database Dev")
 
 # Extract and print all of the values
 worksheet = sheet.get_worksheet(0)
@@ -68,6 +69,11 @@ class App(tk.Frame):
         # Assign Button
         assignButton = tk.Button(self, text="Assign", width = 10, command=self.searchAndUpdate)
         assignButton.grid(row=3, column=1, sticky="w")
+
+        # Print Button
+        self.printCheck = tk.IntVar()
+        checkButton = tk.Checkbutton(self, text="Print Label", variable=self.printCheck)
+        checkButton.grid(row=3, column = 1, sticky="e")
 
         # Label
         tk.Label(self, text="IMEI:").grid(row=4,sticky="e")
@@ -165,6 +171,9 @@ class App(tk.Frame):
             self.iccid_string.set(row[4])
             self.location_string.set(row[5])
 
+            if (self.printCheck.get() == 1):
+                generateAndPrint(self.imei_string.get(), self.serialNumber_string.get(), self.phoneNumber_string.get(), self.iccid_string.get(), self.location_string.get(), 1)
+
          # there are some cells that is empty, this is normal
         except IndexError:
             return
@@ -173,7 +182,6 @@ class App(tk.Frame):
         except gspread.exceptions.CellNotFound:
             self.statusText.set(self.search_string.get() + " NOT found.")
             self.search_field.focus()
-            return
 
 # GUI settings
 root = tk.Tk()

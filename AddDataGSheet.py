@@ -6,6 +6,7 @@ import time
 from csv import writer
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+from print import *
 
 print("Connecting to Google Drive API...")
 
@@ -16,7 +17,7 @@ client = gspread.authorize(creds)
 
 # Find a workbook by name and open the first sheet
 # Make sure you use the right name here.
-sheet = client.open("COVID-19 Tablet DB")
+sheet = client.open("Tablet Database Dev")
 
 # Extract and print all of the values
 worksheet = sheet.get_worksheet(0)
@@ -61,9 +62,15 @@ class App(tk.Frame):
         add = tk.Button(self, text="Add", width = 10, command=self.addRowToGSheet)
         add.grid(row=5, column=1, sticky="w")
 
+        # Print Button
+        self.printCheck = tk.IntVar()
+        checkButton = tk.Checkbutton(self, text="Print Label", variable=self.printCheck)
+        checkButton.grid(row=5, column = 1, sticky="e")
+
         # Clear Button
         clear = tk.Button(self, text="Clear", command=self.clearEntries)
         clear.grid(row=5, column=0, sticky="e")
+
         # Status Text
         self.statusText = tk.StringVar()
         self.statusText.set("Ready for input...")
@@ -89,8 +96,8 @@ class App(tk.Frame):
         location = self.location_sting.get()
 
         # Do not write to csv if any of the field is empty
-        if (imei == ''):
-            self.statusText.set("Data NOT added! Please fill in IMEI! Ready for input...")
+        if (imei == '' or serialNo == '' or phoneNo == '' or iccid == '' or location == ''):
+            self.statusText.set("Data NOT added! Please fill in all value! Ready for input...")
             return
 
         if (len(imei) != 15):
@@ -104,6 +111,10 @@ class App(tk.Frame):
         except gspread.exceptions.CellNotFound:
             worksheet.append_row([addedTime, imei, serialNo, phoneNo, iccid, location])
             self.statusText.set("Added " + imei + ". Ready for input...")
+            # Print label
+            if (self.printCheck.get() == 1):
+                generateAndPrint(imei, serialNo, phoneNo, iccid, location, 2)
+
             self.clearEntries()
 
     def clearEntries(self, event=None):
