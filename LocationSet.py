@@ -31,7 +31,11 @@ column_definition = {
     3: 'Serial Number',
     4: 'Phone Number',
     5: 'ICCID',
-    6: 'Location'
+    6: 'Location',
+    7: 'Sub Location',
+    8: 'Project',
+    9: 'Mode',
+    10: 'Cellular Operator'
 }
 
 def popup(title, msg):
@@ -51,75 +55,91 @@ class App(tk.Frame):
 
 
         tk.Label(self, text="Location Assignment").grid(row=0, columnspan=2, sticky="ew")
-        ## Location Input Area
-        # Labels
-        tk.Label(self, text="Target Location:").grid(row=1, sticky="e")
-        self.target_location_string = tk.StringVar()
-        self.target_location_field = tk.Entry(self, textvariable=self.target_location_string, width=20)
-        self.target_location_field.grid(row=1, column=1, sticky="we")
 
         ## Seach Area
         # Labels
-        tk.Label(self, text="Identifier:").grid(row=2, sticky="e")
-        
-        # Entry
+        tk.Label(self, text="Identifier:").grid(row=1, sticky="e")
         self.search_string = tk.StringVar()
         self.search_field = tk.Entry(self, textvariable=self.search_string, width=20)
-        self.search_field.grid(row=2, column=1, sticky="we")
+        self.search_field.grid(row=1, column=1, sticky="we")
+
+        ## Location Input Area
+        tk.Label(self, text="Location").grid(row=2, columnspan=2, sticky="we")
+        # Labels
+        tk.Label(self, text="Target Location:").grid(row=3, sticky="e")
+        self.target_location_string = tk.StringVar()
+        self.target_location_field = tk.Entry(self, textvariable=self.target_location_string, width=20)
+        self.target_location_field.grid(row=3, column=1, sticky="we")
+
+        tk.Label(self, text="Sub Location:").grid(row=4, sticky="e")
+        self.target_sub_location_string = tk.StringVar()
+        self.target_sub_location_field = tk.Entry(self, textvariable=self.target_sub_location_string, width=20)
+        self.target_sub_location_field.grid(row=4, column=1, sticky="we")
+        
+        tk.Label(self, text="Project:").grid(row=5, sticky="e")
+        self.target_project_string = tk.StringVar()
+        self.target_project_field = tk.Entry(self, textvariable=self.target_project_string, width=20)
+        self.target_project_field.grid(row=5, column=1, sticky="we")
+
+        tk.Label(self, text="Device Mode:").grid(row=6, sticky="e")
+        self.target_device_mode_string = tk.StringVar()
+        self.target_device_mode_field = tk.Entry(self, textvariable=self.target_device_mode_string, width=20)
+        self.target_device_mode_field.grid(row=6, column=1, sticky="we")
 
         # Assign Button
         assignButton = tk.Button(self, text="Assign", width = 10, command=self.searchAndUpdate)
-        assignButton.grid(row=3, column=1, sticky="w")
+        assignButton.grid(row=7, column=1, sticky="w")
 
-        # Print Button
+        # Print Checkbox
         self.printCheck = tk.IntVar()
         checkButton = tk.Checkbutton(self, text="Print Label", variable=self.printCheck)
-        checkButton.grid(row=3, column = 1, sticky="e")
+        checkButton.grid(row=7, column = 1, sticky="e")
 
+
+        ## Records
+        tk.Label(self, text="Current Records").grid(row=8, columnspan=2,sticky="we")
         # Label
-        tk.Label(self, text="IMEI:").grid(row=4,sticky="e")
-        tk.Label(self, text="Serial Number:").grid(row=5,sticky="e")
-        tk.Label(self, text="Phone Number:").grid(row=6, sticky="e")
-        tk.Label(self, text="ICCID:").grid(row=7, sticky="e")
-        tk.Label(self, text="Deployed Location:").grid(row=8, sticky="e")
-
-        # Entries
+        tk.Label(self, text="IMEI:").grid(row=9,sticky="e")
         self.imei_string = tk.StringVar()
-        self.serialNumber_string = tk.StringVar()
-        self.phoneNumber_string = tk.StringVar()
-        self.iccid_string = tk.StringVar()
-        self.location_string = tk.StringVar()
-
-        # Entries Field
         self.imei = tk.Entry(self, textvariable=self.imei_string, width=20, state=tk.DISABLED)
-        self.serialNo = tk.Entry(self, textvariable=self.serialNumber_string, width=20, state=tk.DISABLED)
-        self.phoneNo = tk.Entry(self, textvariable=self.phoneNumber_string, width=20, state=tk.DISABLED)
-        self.iccid = tk.Entry(self, textvariable=self.iccid_string, width=20, state=tk.DISABLED)
-        self.location = tk.Entry(self, textvariable=self.location_string, width=20, state=tk.DISABLED)
+        self.imei.grid(row=9, column=1, sticky="we")
 
-        # Field Properties
-        self.imei.grid(row=4, column=1, sticky="we")
-        self.serialNo.grid(row=5, column=1, sticky="we")
-        self.phoneNo.grid(row=6, column=1, sticky="we")
-        self.iccid.grid(row=7, column=1, sticky="we")
-        self.location.grid(row=8, column=1, sticky="we")
+        tk.Label(self, text="Serial Number:").grid(row=10,sticky="e")
+        self.serialNumber_string = tk.StringVar()
+        self.serialNo = tk.Entry(self, textvariable=self.serialNumber_string, width=20, state=tk.DISABLED)
+        self.serialNo.grid(row=10, column=1, sticky="we")
+        
+        tk.Label(self, text="Phone Number:").grid(row=11, sticky="e")
+        self.phoneNumber_string = tk.StringVar()
+        self.phoneNo = tk.Entry(self, textvariable=self.phoneNumber_string, width=20, state=tk.DISABLED)
+        self.phoneNo.grid(row=11, column=1, sticky="we")
+        
+        tk.Label(self, text="ICCID:").grid(row=12, sticky="e")
+        self.iccid_string = tk.StringVar()
+        self.iccid = tk.Entry(self, textvariable=self.iccid_string, width=20, state=tk.DISABLED)
+        self.iccid.grid(row=12, column=1, sticky="we")
+        
+        tk.Label(self, text="Deployed Location:").grid(row=13, sticky="e")
+        self.location_string = tk.StringVar()
+        self.location = tk.Entry(self, textvariable=self.location_string, width=20, state=tk.DISABLED)
+        self.location.grid(row=13, column=1, sticky="we")
 
         # Clear All Button
         self.cancelButton = tk.Button(self, text="Clear All", width = 5, command=self.clearEntries)
-        self.cancelButton.grid(row=9, column=0, sticky="e")
+        self.cancelButton.grid(row=14, column=0, sticky="e")
 
         # Status Text
         self.statusText = tk.StringVar()
         self.statusText.set("Ready to seach...")
         self.status = tk.Entry(self, textvariable=self.statusText, width=50, state='disabled')
-        self.status.grid(row=10,column=0, columnspan=2, sticky="ws")
+        self.status.grid(row=15,column=0, columnspan=2, sticky="ws")
 
         # Binding
         self.target_location_field.bind("<Return>", lambda x:root.event_generate('<Tab>'))
         self.search_field.bind("<Return>", self.searchAndUpdate)
 
         # Focus to search box
-        self.target_location_field.focus()
+        self.search_field.focus()
 
     def clearEntries(self, event=None, clear_target_location_field=True):
         self.imei_string.set('')
@@ -130,8 +150,11 @@ class App(tk.Frame):
 
         if (clear_target_location_field):
             self.search_field.delete(0,'end')
-            self.target_location_field.delete(0, 'end')
-            self.target_location_field.focus()
+            self.target_location_field.delete(0,'end')
+            self.target_sub_location_field.delete(0,'end')
+            self.target_project_field.delete(0,'end')
+            self.target_device_mode_field.delete(0,'end')
+            self.search_field.focus()
         
 
     def searchAndUpdate(self, event=None):
@@ -147,9 +170,9 @@ class App(tk.Frame):
             self.statusText.set("Searching...")
             self.target_search_loc = worksheet.find(self.search_string.get())
 
-            # Do not allow search with location or time
-            if (column_definition[self.target_search_loc.col] == 'Location' or column_definition[self.target_search_loc.col] == 'Updated Time'):
-                self.statusText.set("Cannot search with location or time!")
+            # Only allow search with IMEI / SN / Phone Number / ICCID
+            if (self.target_search_loc.col < 2 or self.target_search_loc.col > 5):
+                self.statusText.set("Only accept IMEI / SN / Phone Number / ICCID")
                 return
 
             self.statusText.set("Found " + self.search_string.get() + " as " + column_definition[self.target_search_loc.col] + ".")
@@ -157,6 +180,9 @@ class App(tk.Frame):
             # Update time and location
             worksheet.update_cell(self.target_search_loc.row, 1, time.time()) #time
             worksheet.update_cell(self.target_search_loc.row, 6, self.target_location_string.get()) #location
+            worksheet.update_cell(self.target_search_loc.row, 7, self.target_sub_location_string.get()) #sub location
+            worksheet.update_cell(self.target_search_loc.row, 8, self.target_project_field.get()) #project
+            worksheet.update_cell(self.target_search_loc.row, 9, self.target_device_mode_string.get()) #mode
             
             # get the whole row
             row = worksheet.row_values(self.target_search_loc.row, value_render_option='UNFORMATTED_VALUE')
