@@ -36,28 +36,28 @@ class App(tk.Frame):
         tk.Label(self, text="Serial Number:").grid(row=1,sticky="e")
         tk.Label(self, text="Phone Number:").grid(row=2, sticky="e")
         tk.Label(self, text="ICCID:").grid(row=3, sticky="e")
-        tk.Label(self, text="Deployed Location:").grid(row=4, sticky="e")
+        tk.Label(self, text="Cellular Operator:").grid(row=4, sticky="e")
 
         # Entries
         self.serialNumber_string = tk.StringVar()
         self.imei_string = tk.StringVar()
         self.phoneNumber_string = tk.StringVar()
         self.iccid_string = tk.StringVar()
-        self.location_sting = tk.StringVar()
+        self.operator_string = tk.StringVar()
 
         # Entries Field
         self.imei = tk.Entry(self, textvariable=self.imei_string, width=20)
         self.serialNo = tk.Entry(self, textvariable=self.serialNumber_string, width=20)
         self.phoneNo = tk.Entry(self, textvariable=self.phoneNumber_string, width=20)
         self.iccid = tk.Entry(self, textvariable=self.iccid_string, width=20)
-        self.location = tk.Entry(self, textvariable=self.location_sting, width=20)
+        self.operator = tk.Entry(self, textvariable=self.operator_string, width=20)
 
         # Field Properties
         self.imei.grid(row=0, column=1, sticky="we")
         self.serialNo.grid(row=1, column=1, sticky="we")
         self.phoneNo.grid(row=2, column=1, sticky="we")
         self.iccid.grid(row=3, column=1, sticky="we")
-        self.location.grid(row=4, column=1, sticky="we")
+        self.operator.grid(row=4, column=1, sticky="we")
 
         # Add Button
         add = tk.Button(self, text="Add", width = 10, command=self.addRowToGSheet)
@@ -83,7 +83,7 @@ class App(tk.Frame):
         self.serialNo.bind("<Return>", lambda x:root.event_generate('<Tab>'))
         self.phoneNo.bind("<Return>", lambda x:root.event_generate('<Tab>'))
         self.iccid.bind("<Return>", lambda x:root.event_generate('<Tab>'))
-        self.location.bind("<Return>", self.addRowToGSheet)
+        self.operator.bind("<Return>", self.addRowToGSheet)
 
         self.imei.focus()
         
@@ -94,10 +94,10 @@ class App(tk.Frame):
         serialNo = self.serialNumber_string.get()
         phoneNo = self.phoneNumber_string.get()
         iccid = self.iccid_string.get()
-        location = self.location_sting.get()
+        operator = self.operator_string.get()
 
         # Do not write to csv if any of the field is empty
-        if (imei == '' or serialNo == '' or phoneNo == '' or iccid == '' or location == ''):
+        if (imei == '' or serialNo == '' or phoneNo == '' or iccid == '' or operator == ''):
             self.statusText.set("Data NOT added! Please fill in all value! Ready for input...")
             return
 
@@ -110,11 +110,11 @@ class App(tk.Frame):
             self.statusText.set("Data NOT added! " + imei + " is a duplicate.")
 
         except gspread.exceptions.CellNotFound:
-            worksheet.append_row([addedTime, imei, serialNo, phoneNo, iccid, location])
+            worksheet.append_row([addedTime, imei, serialNo, phoneNo, iccid, '', '', '', '', operator])
             self.statusText.set("Added " + imei + ". Ready for input...")
             # Print label
             if (self.printCheck.get() == 1):
-                generateAndPrint(imei, serialNo, phoneNo, iccid, location, 2)
+                generateAndPrint(imei, serialNo, phoneNo, iccid, 'DO NOT REMOVE', 2)
 
             self.clearEntries()
 
@@ -122,7 +122,6 @@ class App(tk.Frame):
         self.imei.delete(0, 'end')
         self.serialNo.delete(0, 'end')
         self.phoneNo.delete(0, 'end')
-        self.location.delete(0, 'end')
         self.iccid.delete(0,'end')
         self.imei.focus()
 
