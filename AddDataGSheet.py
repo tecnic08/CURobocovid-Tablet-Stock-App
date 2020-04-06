@@ -34,56 +34,51 @@ class App(tk.Frame):
         # Labels
         tk.Label(self, text="IMEI:").grid(row=0, sticky="e")
         tk.Label(self, text="Serial Number:").grid(row=1,sticky="e")
-        tk.Label(self, text="Phone Number:").grid(row=2, sticky="e")
+        tk.Label(self, text="Phone Number Code:").grid(row=2, sticky="e")
         tk.Label(self, text="ICCID:").grid(row=3, sticky="e")
-        tk.Label(self, text="Cellular Operator:").grid(row=4, sticky="e")
 
         # Entries
         self.serialNumber_string = tk.StringVar()
         self.imei_string = tk.StringVar()
         self.phoneNumber_string = tk.StringVar()
         self.iccid_string = tk.StringVar()
-        self.operator_string = tk.StringVar()
 
         # Entries Field
         self.imei = tk.Entry(self, textvariable=self.imei_string, width=20)
         self.serialNo = tk.Entry(self, textvariable=self.serialNumber_string, width=20)
         self.phoneNo = tk.Entry(self, textvariable=self.phoneNumber_string, width=20)
         self.iccid = tk.Entry(self, textvariable=self.iccid_string, width=20)
-        self.operator = tk.Entry(self, textvariable=self.operator_string, width=20)
 
         # Field Properties
         self.imei.grid(row=0, column=1, sticky="we")
         self.serialNo.grid(row=1, column=1, sticky="we")
         self.phoneNo.grid(row=2, column=1, sticky="we")
         self.iccid.grid(row=3, column=1, sticky="we")
-        self.operator.grid(row=4, column=1, sticky="we")
 
         # Add Button
         add = tk.Button(self, text="Add", width = 10, command=self.addRowToGSheet)
-        add.grid(row=5, column=1, sticky="w")
+        add.grid(row=4, column=1, sticky="w")
 
         # Print Button
         self.printCheck = tk.IntVar()
         checkButton = tk.Checkbutton(self, text="Print Label (2)", variable=self.printCheck)
-        checkButton.grid(row=5, column = 1, sticky="e")
+        checkButton.grid(row=4, column = 1, sticky="e")
 
         # Clear Button
         clear = tk.Button(self, text="Clear", command=self.clearEntries)
-        clear.grid(row=5, column=0, sticky="e")
+        clear.grid(row=4, column=0, sticky="e")
 
         # Status Text
         self.statusText = tk.StringVar()
         self.statusText.set("Ready for input...")
         self.status = tk.Entry(self, textvariable=self.statusText, width=50, state='disabled')
-        self.status.grid(row=6,column=0, columnspan=2, sticky="ws")
+        self.status.grid(row=5,column=0, columnspan=2, sticky="ws")
 
         # Binding
         self.imei.bind("<Return>", lambda x:root.event_generate('<Tab>'))
         self.serialNo.bind("<Return>", lambda x:root.event_generate('<Tab>'))
         self.phoneNo.bind("<Return>", lambda x:root.event_generate('<Tab>'))
-        self.iccid.bind("<Return>", lambda x:root.event_generate('<Tab>'))
-        self.operator.bind("<Return>", self.addRowToGSheet)
+        self.iccid.bind("<Return>", self.addRowToGSheet)
 
         self.imei.focus()
         
@@ -94,15 +89,18 @@ class App(tk.Frame):
         serialNo = self.serialNumber_string.get()
         phoneNo = self.phoneNumber_string.get()
         iccid = self.iccid_string.get()
-        operator = self.operator_string.get()
 
         # Do not write to csv if any of the field is empty
-        if (imei == '' or serialNo == '' or phoneNo == '' or iccid == '' or operator == ''):
+        if (imei == '' or serialNo == '' or phoneNo == '' or iccid == ''):
             self.statusText.set("Data NOT added! Please fill in all value! Ready for input...")
             return
 
+        if (len(phoneNo) != 12):
+            self.statusText.set("Data NOT added! Phone Number Barcode must be 13 digits.")
+            return
+
         if (len(imei) != 15):
-            self.statusText.set("Data NOT added! IMEI must be 15 digits")
+            self.statusText.set("Data NOT added! IMEI must be 15 digits.")
             return
         
         try: 
@@ -110,6 +108,7 @@ class App(tk.Frame):
             self.statusText.set("Data NOT added! " + imei + " is a duplicate.")
 
         except gspread.exceptions.CellNotFound:
+            phoneNo, operator = self.decodeOperator(self.phoneNumber_string.get())
             worksheet.append_row([addedTime, imei, serialNo, phoneNo, iccid, '', '', '', '', operator])
             self.statusText.set("Added " + imei + ". Ready for input...")
             # Print label
@@ -124,6 +123,17 @@ class App(tk.Frame):
         self.phoneNo.delete(0, 'end')
         self.iccid.delete(0,'end')
         self.imei.focus()
+
+    def decodeOperator(self, numberStr):
+        strippedNumber = numberStr
+        # check phone number format
+        if(len(strippedNumber) != 12):
+            return strippedNumber, 'Unknown'
+        # check for operator
+        operator = cellularOperatorPrefix.get(int(strippedNumber[0]), 'Unknown')
+        strippedNumber = strippedNumber[2:12]
+
+        return strippedNumber, operator
 
 
 # GUI settings
