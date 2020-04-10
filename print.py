@@ -48,18 +48,18 @@ def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, loc
     options = {'width': 490}
     imgkit.from_file('sticker.html', 'out.jpg', options=options)
 
-    # # Print
-    # printTerminalCommand = "lpr -P QL800 -o landscape"
+    # Print
+    printTerminalCommand = "lpr -P QL800 -o landscape"
 
-    # for x in range(copies):
-    #   printTerminalCommand = printTerminalCommand + " out.jpg"
+    for x in range(copies):
+      printTerminalCommand = printTerminalCommand + " out.jpg"
 
-    # os.system(printTerminalCommand)
+    os.system(printTerminalCommand)
 
-    # # Clean up
-    # os.remove("imei.png")
-    # os.remove("serialNumber.png")
-    # os.remove("iccid.png")
-    # os.remove("sticker.html")
-    # os.remove("out.jpg")
+    # Clean up
+    os.remove("imei.png")
+    os.remove("serialNumber.png")
+    os.remove("iccid.png")
+    os.remove("sticker.html")
+    os.remove("out.jpg")
     return
