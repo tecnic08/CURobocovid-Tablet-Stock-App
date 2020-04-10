@@ -113,7 +113,7 @@ class App(tk.Frame):
             self.statusText.set("Added " + imei + ". Ready for input...")
             # Print label
             if (self.printCheck.get() == 1):
-                generateAndPrint(imei, serialNo, phoneNo, iccid, 'DO NOT REMOVE', 2)
+                generateAndPrint(imei, serialNo, phoneNo, iccid, 'DO NOT REMOVE', copies = 2)
 
             self.clearEntries()
 

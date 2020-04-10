@@ -199,7 +199,7 @@ class App(tk.Frame):
             self.location_string.set(row[5])
 
             if (self.printCheck.get() == 1):
-                generateAndPrint(self.imei_string.get(), self.serialNumber_string.get(), self.phoneNumber_string.get(), self.iccid_string.get(), self.location_string.get(), 1)
+                generateAndPrint(self.imei_string.get(), self.serialNumber_string.get(), self.phoneNumber_string.get(), self.iccid_string.get(), self.location_string.get(),self.target_sub_location_string.get(), self.target_device_mode_string.get(), 1)
 
          # there are some cells that is empty, this is normal
         except IndexError:
