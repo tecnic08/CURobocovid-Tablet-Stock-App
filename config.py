@@ -6,7 +6,10 @@ developmentDatabase = 'Tablet Database Dev'
 productionDatabase = 'COVID-19 Tablet DB'
 
 # Database to use
-useDatabase = productionDatabase
+useDatabase = developmentDatabase
+
+# Shipping Database Location
+shippingDatabase = 'แบบแสดงความต้องการชุดระบบสื่อสารทางไกล (การตอบกลับ)'
 
 # Client Credential
 clientCredentialFile = 'client_secret.json'
@@ -16,3 +19,6 @@ cellularOperatorPrefix = {
     0 : 'TrueMove',
     3 : 'AIS'
 }
+
+# Shipping cursor
+nextInQueCursor = "nextInQue"
