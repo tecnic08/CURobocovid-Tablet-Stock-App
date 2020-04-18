@@ -204,19 +204,26 @@ class App(tk.Frame):
             self.search_field.delete(0, 'end')
             self.search_field.focus()
 
-            # just for printing
+            # decode row
+            imei_str = row[1]
+            sn_str = row[2]
             phoneNumber_str = row[3]
             iccid_str = row[4]
+            location_str = row[5]
+            subLocation_str = row[6]
+            project_str = row[7]
+            deviceMode_str = row[8]
+            operator_str = row[9]
 
             # update each field for displaying
-            self.imei_string.set(row[1])
-            self.serialNumber_string.set(row[2])
-            self.cellularInfo_string.set("0{} / {}".format(phoneNumber_str, row[9]))
-            self.location_string.set("{} {}".format(row[5],row[6]))
-            self.deviceMode_string.set("{} {}".format(row[7], row[8]))
+            self.imei_string.set(imei_str)
+            self.serialNumber_string.set(sn_str)
+            self.cellularInfo_string.set("0{} / {}".format(phoneNumber_str, operator_str))
+            self.location_string.set("{} {}".format(location_str, subLocation_str))
+            self.deviceMode_string.set("{} {}".format(project_str, deviceMode_str))
 
             if (self.printCheck.get() == 1):
-                generateAndPrint(self.imei_string.get(), self.serialNumber_string.get(), phoneNumber_str, iccid_str, self.location_string.get(),self.target_sub_location_string.get(), self.target_device_mode_string.get(), 1)
+                generateAndPrint(imei_str, sn_str, phoneNumber_str, iccid_str, location_str, subLocation_str, deviceMode_str, 1)
 
          # there are some cells that is empty, this is normal
         except IndexError:

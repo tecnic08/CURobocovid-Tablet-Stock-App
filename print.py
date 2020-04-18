@@ -32,11 +32,13 @@ def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, loc
     sticker_html.write(tabletLabel.format(imei_str, serialNumber_str, location_str, subLocation_str, deviceMode_str, phoneNumber_str))
     sticker_html.close()
 
+    print(len(location_str)+len(subLocation_str))
+
     options = {'page-width' : '80mm', 'page-height' : '50mm', 'margin-top': '0mm', 'margin-right': '0mm','margin-bottom': '0mm', 'margin-left': '0mm'}
     pdfkit.from_file('sticker.html', 'sticker.pdf', options=options)
 
     # Print
-    printTerminalCommand = "lpr -P {0} -o Darkness={1}".format(tabletLabelPrinter, darknessLevel)
+    printTerminalCommand = "lpr -P {0} -o Darkness={1} -o page-ranges=1".format(tabletLabelPrinter, darknessLevel)
 
     for x in range(copies):
       printTerminalCommand = printTerminalCommand + " sticker.pdf"
