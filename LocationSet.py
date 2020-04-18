@@ -38,6 +38,18 @@ column_definition = {
     10: 'Cellular Operator'
 }
 
+deviceModeOptions = [
+    'Patient',
+    'Doctor',
+    'Development'
+]
+
+projectOptions = [
+    'Telepresence',
+    'Pinto',
+    'Development'
+]
+
 def popup(title, msg):
     '''Open popup window with title and msg'''
     w = tk.Toplevel(root)
@@ -60,7 +72,7 @@ class App(tk.Frame):
         # Labels
         tk.Label(self, text="Identifier:").grid(row=1, sticky="e")
         self.search_string = tk.StringVar()
-        self.search_field = tk.Entry(self, textvariable=self.search_string, width=20)
+        self.search_field = tk.Entry(self, textvariable=self.search_string, width=40)
         self.search_field.grid(row=1, column=1, sticky="we")
 
         ## Location Input Area
@@ -68,22 +80,24 @@ class App(tk.Frame):
         # Labels
         tk.Label(self, text="Target Location:").grid(row=3, sticky="e")
         self.target_location_string = tk.StringVar()
-        self.target_location_field = tk.Entry(self, textvariable=self.target_location_string, width=20)
+        self.target_location_field = tk.Entry(self, textvariable=self.target_location_string, width=40)
         self.target_location_field.grid(row=3, column=1, sticky="we")
 
         tk.Label(self, text="Sub Location:").grid(row=4, sticky="e")
         self.target_sub_location_string = tk.StringVar()
-        self.target_sub_location_field = tk.Entry(self, textvariable=self.target_sub_location_string, width=20)
+        self.target_sub_location_field = tk.Entry(self, textvariable=self.target_sub_location_string, width=40)
         self.target_sub_location_field.grid(row=4, column=1, sticky="we")
         
         tk.Label(self, text="Project:").grid(row=5, sticky="e")
         self.target_project_string = tk.StringVar()
-        self.target_project_field = tk.Entry(self, textvariable=self.target_project_string, width=20)
+        self.target_project_string.set(projectOptions[0])
+        self.target_project_field = tk.OptionMenu(self, self.target_project_string, *projectOptions)
         self.target_project_field.grid(row=5, column=1, sticky="we")
 
         tk.Label(self, text="Device Mode:").grid(row=6, sticky="e")
         self.target_device_mode_string = tk.StringVar()
-        self.target_device_mode_field = tk.Entry(self, textvariable=self.target_device_mode_string, width=20)
+        self.target_device_mode_string.set(deviceModeOptions[0])
+        self.target_device_mode_field = tk.OptionMenu(self, self.target_device_mode_string, *deviceModeOptions)
         self.target_device_mode_field.grid(row=6, column=1, sticky="we")
 
         # Assign Button
@@ -92,6 +106,7 @@ class App(tk.Frame):
 
         # Print Checkbox
         self.printCheck = tk.IntVar()
+        self.printCheck.set(1)
         checkButton = tk.Checkbutton(self, text="Print Label", variable=self.printCheck)
         checkButton.grid(row=7, column = 1, sticky="e")
 
@@ -101,37 +116,37 @@ class App(tk.Frame):
         # Label
         tk.Label(self, text="IMEI:").grid(row=9,sticky="e")
         self.imei_string = tk.StringVar()
-        self.imei = tk.Entry(self, textvariable=self.imei_string, width=20, state=tk.DISABLED)
+        self.imei = tk.Entry(self, textvariable=self.imei_string, width=40, state=tk.DISABLED)
         self.imei.grid(row=9, column=1, sticky="we")
 
         tk.Label(self, text="Serial Number:").grid(row=10,sticky="e")
         self.serialNumber_string = tk.StringVar()
-        self.serialNo = tk.Entry(self, textvariable=self.serialNumber_string, width=20, state=tk.DISABLED)
+        self.serialNo = tk.Entry(self, textvariable=self.serialNumber_string, width=40, state=tk.DISABLED)
         self.serialNo.grid(row=10, column=1, sticky="we")
         
-        tk.Label(self, text="Phone Number:").grid(row=11, sticky="e")
-        self.phoneNumber_string = tk.StringVar()
-        self.phoneNo = tk.Entry(self, textvariable=self.phoneNumber_string, width=20, state=tk.DISABLED)
-        self.phoneNo.grid(row=11, column=1, sticky="we")
+        tk.Label(self, text="Cellular Information:").grid(row=11, sticky="e")
+        self.cellularInfo_string = tk.StringVar()
+        self.cellularInfo = tk.Entry(self, textvariable=self.cellularInfo_string, width=40, state=tk.DISABLED)
+        self.cellularInfo.grid(row=11, column=1, sticky="we")
         
-        tk.Label(self, text="ICCID:").grid(row=12, sticky="e")
-        self.iccid_string = tk.StringVar()
-        self.iccid = tk.Entry(self, textvariable=self.iccid_string, width=20, state=tk.DISABLED)
-        self.iccid.grid(row=12, column=1, sticky="we")
-        
-        tk.Label(self, text="Deployed Location:").grid(row=13, sticky="e")
+        tk.Label(self, text="Deployed Location:").grid(row=12, sticky="e")
         self.location_string = tk.StringVar()
-        self.location = tk.Entry(self, textvariable=self.location_string, width=20, state=tk.DISABLED)
-        self.location.grid(row=13, column=1, sticky="we")
+        self.location = tk.Entry(self, textvariable=self.location_string, width=40, state=tk.DISABLED)
+        self.location.grid(row=12, column=1, sticky="we")
+
+        tk.Label(self, text="Device Mode:").grid(row=13, sticky="e")
+        self.deviceMode_string = tk.StringVar()
+        self.deviceMode = tk.Entry(self, textvariable=self.deviceMode_string, width=40, state=tk.DISABLED)
+        self.deviceMode.grid(row=13, column=1, sticky="we")
 
         # Clear All Button
         self.cancelButton = tk.Button(self, text="Clear All", width = 5, command=self.clearEntries)
-        self.cancelButton.grid(row=14, column=0, sticky="e")
+        self.cancelButton.grid(row=14, column=1, sticky="e")
 
         # Status Text
         self.statusText = tk.StringVar()
         self.statusText.set("Ready to seach...")
-        self.status = tk.Entry(self, textvariable=self.statusText, width=50, state='disabled')
+        self.status = tk.Entry(self, textvariable=self.statusText, width=70, state='disabled')
         self.status.grid(row=15,column=0, columnspan=2, sticky="ws")
 
         # Binding
@@ -144,16 +159,14 @@ class App(tk.Frame):
     def clearEntries(self, event=None, clear_target_location_field=True):
         self.imei_string.set('')
         self.serialNumber_string.set('')
-        self.phoneNumber_string.set('')
-        self.iccid_string.set('')
+        self.cellularInfo_string.set('')
+        self.deviceMode_string.set('')
         self.location_string.set('')
 
         if (clear_target_location_field):
             self.search_field.delete(0,'end')
             self.target_location_field.delete(0,'end')
             self.target_sub_location_field.delete(0,'end')
-            self.target_project_field.delete(0,'end')
-            self.target_device_mode_field.delete(0,'end')
             self.search_field.focus()
         
 
@@ -181,7 +194,7 @@ class App(tk.Frame):
             worksheet.update_cell(self.target_search_loc.row, 1, time.time()) #time
             worksheet.update_cell(self.target_search_loc.row, 6, self.target_location_string.get()) #location
             worksheet.update_cell(self.target_search_loc.row, 7, self.target_sub_location_string.get()) #sub location
-            worksheet.update_cell(self.target_search_loc.row, 8, self.target_project_field.get()) #project
+            worksheet.update_cell(self.target_search_loc.row, 8, self.target_project_string.get()) #project
             worksheet.update_cell(self.target_search_loc.row, 9, self.target_device_mode_string.get()) #mode
             
             # get the whole row
@@ -191,15 +204,19 @@ class App(tk.Frame):
             self.search_field.delete(0, 'end')
             self.search_field.focus()
 
-            # update each field
+            # just for printing
+            phoneNumber_str = row[3]
+            iccid_str = row[4]
+
+            # update each field for displaying
             self.imei_string.set(row[1])
             self.serialNumber_string.set(row[2])
-            self.phoneNumber_string.set(row[3])
-            self.iccid_string.set(row[4])
-            self.location_string.set(row[5])
+            self.cellularInfo_string.set("0{} / {}".format(phoneNumber_str, row[9]))
+            self.location_string.set("{} {}".format(row[5],row[6]))
+            self.deviceMode_string.set("{} {}".format(row[7], row[8]))
 
             if (self.printCheck.get() == 1):
-                generateAndPrint(self.imei_string.get(), self.serialNumber_string.get(), self.phoneNumber_string.get(), self.iccid_string.get(), self.location_string.get(),self.target_sub_location_string.get(), self.target_device_mode_string.get(), 1)
+                generateAndPrint(self.imei_string.get(), self.serialNumber_string.get(), phoneNumber_str, iccid_str, self.location_string.get(),self.target_sub_location_string.get(), self.target_device_mode_string.get(), 1)
 
          # there are some cells that is empty, this is normal
         except IndexError:

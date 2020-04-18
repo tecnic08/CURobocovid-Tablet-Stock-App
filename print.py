@@ -2,9 +2,12 @@ import os
 import imgkit
 import pdfkit
 from pystrich.datamatrix import DataMatrixEncoder
+from pystrich.code128 import Code128Encoder
 from components.thaiDateTime import *
 from components.shipOutLetterFormat import *
 from components.responseLetterFormat import *
+from components.tabletLabelFormat import *
+from config import *
 
 def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, location_str, subLocation_str = '', deviceMode_str = '', copies = 1):
     imeiDataMatrix = DataMatrixEncoder(imei_str)
@@ -13,50 +16,30 @@ def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, loc
     serialNumberDataMatrix = DataMatrixEncoder(serialNumber_str)
     serialNumberDataMatrix.save("serialNumber.png")
 
-    iccidDataMatrix = DataMatrixEncoder(iccid_str)
-    iccidDataMatrix.save("iccid.png")
+    iccidCode128 = Code128Encoder(iccid_str, options = {"show_label" : False})
+    iccidCode128.save("iccid.png")
 
+    # Add suffix to device
     if (deviceMode_str != ''):
       deviceMode_str = deviceMode_str + ' Device'
 
-    html_str = """
-    <html>
-    <body>
-        <font face="Ubuntu">
-          <table>
-            <tr valign="middle">
-                <td align="left"><img src = "imei.png"></td>
-                <td><center>{0}<br/><br/>{1}</center></td>
-                <td align="center"><h2>{4}</h2></td>
-                <td align="center"><img src = "serialNumber.png"></td>
-            </tr>
-            <tr>
-            </tr>
-            <tr>
-              <td rowspan="2"><img src = "iccid.png"></td>
-              <td><center><b>Phone Number</b></center></td>
-              <td colspan="2" rowspan="2"><center><h2>{2} {3}</h2></center></td>
-            </tr>
-            <tr>
-              <td><center>{5}</center></td>
-            </tr>
-          </table>
-        </font>
-    </body>
-    </html>""".format(imei_str, serialNumber_str, location_str, subLocation_str, deviceMode_str, phoneNumber_str)
+    # Add zero prefix and remove last digit from phone number
+    if (phoneNumber_str != ''):
+      phoneNumber_str = phoneNumber_str[:-1]
+      phoneNumber_str = "0" + phoneNumber_str
 
     sticker_html= open("sticker.html","w")
-    sticker_html.write(html_str)
+    sticker_html.write(tabletLabel.format(imei_str, serialNumber_str, location_str, subLocation_str, deviceMode_str, phoneNumber_str))
     sticker_html.close()
 
-    options = {'width': 490}
-    imgkit.from_file('sticker.html', 'out.jpg', options=options)
+    options = {'page-width' : '80mm', 'page-height' : '50mm', 'margin-top': '0mm', 'margin-right': '0mm','margin-bottom': '0mm', 'margin-left': '0mm'}
+    pdfkit.from_file('sticker.html', 'sticker.pdf', options=options)
 
     # Print
-    printTerminalCommand = "lpr -P TSC_TE300 -o landscape"
+    printTerminalCommand = "lpr -P {0} -o Darkness={1}".format(tabletLabelPrinter, darknessLevel)
 
     for x in range(copies):
-      printTerminalCommand = printTerminalCommand + " out.jpg"
+      printTerminalCommand = printTerminalCommand + " sticker.pdf"
 
     os.system(printTerminalCommand)
 
@@ -65,7 +48,7 @@ def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, loc
     os.remove("serialNumber.png")
     os.remove("iccid.png")
     os.remove("sticker.html")
-    #os.remove("out.jpg")
+    os.remove("sticker.pdf")
     return
 
 def printAddressLabel(name_str, phoneNumber_str, hospitalName_str, address_str, province_str, zipcode_str, copies = 1):
@@ -74,8 +57,14 @@ def printAddressLabel(name_str, phoneNumber_str, hospitalName_str, address_str, 
     <html>
     <body>
         <font face="TH Sarabun New">
-        <p style="font-size:25px; margin:0; padding:0"><b>{0} ({1})</b></p>
-        <p style="font-size:20px; margin:0; padding:0">{2} {3} {4} {5}</p>
+        <table style="width: 500px; height: 190px">
+          <tr>
+            <td><p style="font-size:35px; margin:0; padding:0; text-align:center"><b>{0} ({1})</b></p></td>
+          </tr>
+          <tr>
+            <td><p style="font-size:28px; margin:0; padding:0; text-align:center">{2} {3} {4} {5}</p></td>
+          </tr>
+        </table>
     </font>
     </body>
     </html>""".format(name_str, phoneNumber_str, hospitalName_str, address_str, province_str, zipcode_str)
@@ -84,20 +73,20 @@ def printAddressLabel(name_str, phoneNumber_str, hospitalName_str, address_str, 
     sticker_html.write(html_str)
     sticker_html.close()
 
-    options = {'width': 490, 'encoding':'utf8'}
-    imgkit.from_file('address.html', 'address_label.jpg', options=options)
+    options = {'page-width' : '90mm', 'page-height' : '38mm', 'margin-top': '2mm', 'margin-right': '2mm','margin-bottom': '2mm', 'margin-left': '2mm', 'encoding':'utf8'}
+    pdfkit.from_file('address.html', 'address_label.pdf', options=options)
 
     # Print
-    printTerminalCommand = "lpr -P TSC_TE300"
+    printTerminalCommand = "lpr -P {0}".format(addressLabelPrinter)
 
     for x in range(copies):
-      printTerminalCommand = printTerminalCommand + " address_label.jpg"
+      printTerminalCommand = printTerminalCommand + " address_label.pdf"
 
     os.system(printTerminalCommand)
 
     # Clean up
-    #os.remove("address.html")
-    #os.remove("address_label.jpg")
+    os.remove("address.html")
+    os.remove("address_label.pdf")
     return
 
 def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount):
@@ -124,11 +113,11 @@ def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount):
     pdfkit.from_file('responseLetter.html', 'responseLetter.pdf', options=options)
 
     # Print
-    printTerminalCommand = "lpr -P HP-Color-LaserJet-MFP-M477fdw outLetter.pdf responseLetter.pdf"
+    printTerminalCommand = "lpr -P {} outLetter.pdf responseLetter.pdf".format(standardA4Printer)
 
-    #os.system(printTerminalCommand)
+    os.system(printTerminalCommand)
 
-    # # Clean up
-    # os.remove("outLetter.html")
-    # os.remove("outLetter.pdf")
+    # Clean up
+    os.remove("outLetter.html")
+    os.remove("outLetter.pdf")
     return

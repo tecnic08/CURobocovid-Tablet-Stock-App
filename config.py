@@ -1,12 +1,17 @@
 # Printer Configuration
-printerName = 'QL800'
+tabletLabelPrinter = 'TE300'
+addressLabelPrinter = 'QL800'
+standardA4Printer = 'HP-Color-LaserJet-MFP-M477fdw'
+
+# TSC Printer Darkness
+darknessLevel = '14'
 
 # Database Location
 developmentDatabase = 'Tablet Database Dev'
 productionDatabase = 'COVID-19 Tablet DB'
 
 # Database to use
-useDatabase = developmentDatabase
+useDatabase = productionDatabase
 
 # Shipping Database Location
 shippingDatabase = 'แบบแสดงความต้องการชุดระบบสื่อสารทางไกล (การตอบกลับ)'

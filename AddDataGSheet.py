@@ -61,7 +61,8 @@ class App(tk.Frame):
 
         # Print Button
         self.printCheck = tk.IntVar()
-        checkButton = tk.Checkbutton(self, text="Print Label (2)", variable=self.printCheck)
+        self.printCheck.set(1)
+        checkButton = tk.Checkbutton(self, text="Print Label", variable=self.printCheck)
         checkButton.grid(row=4, column = 1, sticky="e")
 
         # Clear Button
@@ -113,7 +114,7 @@ class App(tk.Frame):
             self.statusText.set("Added " + imei + ". Ready for input...")
             # Print label
             if (self.printCheck.get() == 1):
-                generateAndPrint(imei, serialNo, phoneNo, iccid, 'DO NOT REMOVE', copies = 2)
+                generateAndPrint(imei, serialNo, phoneNo, iccid, 'MIRROR<br/>Quarantine Telepresence System')
 
             self.clearEntries()
 
@@ -139,7 +140,7 @@ class App(tk.Frame):
 # GUI settings
 root = tk.Tk()
 app = App(root)
-root.title("COVID-19 Tablet CSV Generator")
+root.title("COVID-19 Tablet Adding")
 root.minsize(200, 200)
 
 # Initalize GUI
