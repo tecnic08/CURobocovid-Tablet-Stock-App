@@ -1,5 +1,5 @@
 # Printer Configuration
-tabletLabelPrinter = 'TE300'
+tabletLabelPrinter = 'TE210'
 addressLabelPrinter = 'QL800'
 standardA4Printer = 'HP-Color-LaserJet-MFP-M477fdw'
 
