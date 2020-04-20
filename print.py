@@ -19,6 +19,8 @@ def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, loc
     iccidCode128 = Code128Encoder(iccid_str, options = {"show_label" : False})
     iccidCode128.save("iccid.png")
 
+    printSupportLabel = (deviceMode_str == "Doctor")
+
     # Add suffix to device
     if (deviceMode_str != ''):
       deviceMode_str = deviceMode_str + ' Device'
@@ -43,6 +45,10 @@ def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, loc
     for x in range(copies):
       printTerminalCommand = printTerminalCommand + " sticker.pdf"
 
+    if (printSupportLabel):
+      pdfkit.from_file("supportLabel.html", "supportLabel.pdf", options=options)
+      printTerminalCommand + "supportLabel.pdf"
+
     os.system(printTerminalCommand)
 
     # Clean up
@@ -51,6 +57,10 @@ def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, loc
     os.remove("iccid.png")
     os.remove("sticker.html")
     os.remove("sticker.pdf")
+
+    if (printSupportLabel):
+      os.remove("supportLabel.pdf")
+
     return
 
 def printAddressLabel(name_str, phoneNumber_str, hospitalName_str, address_str, province_str, zipcode_str, copies = 1):
@@ -84,11 +94,11 @@ def printAddressLabel(name_str, phoneNumber_str, hospitalName_str, address_str, 
     for x in range(copies):
       printTerminalCommand = printTerminalCommand + " address_label.pdf"
 
-    os.system(printTerminalCommand)
+    #os.system(printTerminalCommand)
 
     # Clean up
     os.remove("address.html")
-    os.remove("address_label.pdf")
+    #os.remove("address_label.pdf")
     return
 
 def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount):
@@ -117,9 +127,11 @@ def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount):
     # Print
     printTerminalCommand = "lpr -P {} outLetter.pdf responseLetter.pdf".format(standardA4Printer)
 
-    os.system(printTerminalCommand)
+    #os.system(printTerminalCommand)
 
     # Clean up
+    os.remove("responseLetter.html")
+    #os.remove("responseLetter.pdf")
     os.remove("outLetter.html")
-    os.remove("outLetter.pdf")
+    #os.remove("outLetter.pdf")
     return

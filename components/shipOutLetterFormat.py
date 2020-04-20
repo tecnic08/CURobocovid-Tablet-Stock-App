@@ -50,7 +50,7 @@ outLetter = """<meta charset="utf-8">
             ทั้งนี้ขอให้ท่านโปรดถ่ายรูปผู้รับมอบกับป้ายส่งมอบ( A4 )พร้อมอุปกรณ์ และลงงนามในหนังสือรับมอบที่แนบตอบกลับมาเพื่อให้ทางผู้บริจาคได้ทราบในการส่งมอบตามความประสงค์ จักขอบคุณยิ่ง
         </p>
         <p style="text-align:right">
-        <img src="components/dummy_signature.png" width = '200px'>
+        <img src="components/signature.png" width = '130px' style="margin:0px 25px 0px 0px">
         <br/>(รองศาตรจารย์.ดร.วิทยา วัณณสุโภประสิทธิ์)
         <br/>ที่ปรึกษาโครงการ
         </p>
