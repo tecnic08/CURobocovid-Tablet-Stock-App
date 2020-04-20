@@ -94,11 +94,11 @@ def printAddressLabel(name_str, phoneNumber_str, hospitalName_str, address_str, 
     for x in range(copies):
       printTerminalCommand = printTerminalCommand + " address_label.pdf"
 
-    #os.system(printTerminalCommand)
+    os.system(printTerminalCommand)
 
     # Clean up
     os.remove("address.html")
-    #os.remove("address_label.pdf")
+    os.remove("address_label.pdf")
     return
 
 def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount):
@@ -127,11 +127,11 @@ def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount):
     # Print
     printTerminalCommand = "lpr -P {} outLetter.pdf responseLetter.pdf".format(standardA4Printer)
 
-    #os.system(printTerminalCommand)
+    os.system(printTerminalCommand)
 
     # Clean up
     os.remove("responseLetter.html")
-    #os.remove("responseLetter.pdf")
+    os.remove("responseLetter.pdf")
     os.remove("outLetter.html")
-    #os.remove("outLetter.pdf")
+    os.remove("outLetter.pdf")
     return
