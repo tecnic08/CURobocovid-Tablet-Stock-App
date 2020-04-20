@@ -46,8 +46,9 @@ def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, loc
       printTerminalCommand = printTerminalCommand + " sticker.pdf"
 
     if (printSupportLabel):
+      options = {'page-width' : '80mm', 'page-height' : '50mm', 'margin-top': '3mm', 'margin-right': '0mm','margin-bottom': '2mm', 'margin-left': '0mm', 'encoding':'utf8'}
       pdfkit.from_file("supportLabel.html", "supportLabel.pdf", options=options)
-      printTerminalCommand + "supportLabel.pdf"
+      printTerminalCommand + " supportLabel.pdf"
 
     os.system(printTerminalCommand)
 
