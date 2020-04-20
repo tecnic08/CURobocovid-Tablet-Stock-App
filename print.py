@@ -34,24 +34,18 @@ def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, loc
     sticker_html.write(tabletLabel.format(imei_str, serialNumber_str, location_str, subLocation_str, deviceMode_str, phoneNumber_str))
     sticker_html.close()
 
-    print(len(location_str)+len(subLocation_str))
-
     options = {'page-width' : '80mm', 'page-height' : '50mm', 'margin-top': '0mm', 'margin-right': '0mm','margin-bottom': '0mm', 'margin-left': '0mm'}
     pdfkit.from_file('sticker.html', 'sticker.pdf', options=options)
-
-    # Print
-    printTerminalCommand = "lpr -P {0} -o Darkness={1} -o page-ranges=1".format(tabletLabelPrinter, darknessLevel)
-
-    for x in range(copies):
-      printTerminalCommand = printTerminalCommand + " sticker.pdf"
-
-    os.system(printTerminalCommand)
+    fileToPrint = "sticker.pdf"
 
     if (printSupportLabel):
       options = {'page-width' : '80mm', 'page-height' : '50mm', 'margin-top': '3mm', 'margin-right': '0mm','margin-bottom': '2mm', 'margin-left': '0mm', 'encoding':'utf8'}
       pdfkit.from_file("components/supportLabel.html", "supportLabel.pdf", options=options)
-      os.system(printTerminalCommand = "lpr -P {0} -o Darkness={1} supportLabel.pdf".format(tabletLabelPrinter, darknessLevel))
-      os.remove("supportLabel.pdf")
+      fileToPrint = fileToPrint + " supportLabel.pdf"
+
+    # Print
+    printTerminalCommand = "lpr -P {0} -o Darkness={1} -o page-ranges=1 -# {2} {3}".format(tabletLabelPrinter, darknessLevel, copies, fileToPrint)
+    os.system(printTerminalCommand)
 
     # Clean up
     os.remove("imei.png")
@@ -59,6 +53,9 @@ def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, loc
     os.remove("iccid.png")
     os.remove("sticker.html")
     os.remove("sticker.pdf")
+
+    if (printSupportLabel):
+      os.remove("supportLabel.pdf")
 
     return
 
