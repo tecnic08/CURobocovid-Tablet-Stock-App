@@ -85,7 +85,7 @@ def printAddressLabel(name_str, phoneNumber_str, hospitalName_str, address_str, 
     pdfkit.from_file('address.html', 'address_label.pdf', options=options)
 
     # Print
-    printTerminalCommand = "lpr -P {0}".format(addressLabelPrinter)
+    printTerminalCommand = "lpr -P {0} ".format(addressLabelPrinter)
 
     for x in range(copies):
       printTerminalCommand = printTerminalCommand + " address_label.pdf"

@@ -43,7 +43,9 @@ class App(tk.Frame):
         tk.Label(self, text="Hospital:").grid(row = 1, column = 0, sticky = 'e')
         tk.Entry(self, textvariable=self.selectedHospital).grid(row = 1, column = 1, sticky = 'w')
 
-        tk.Button(self, text="Load Data", command=self.loadData).grid(row = 2, column = 1, sticky = 'e')
+        tk.Button(self, text="<<", command=self.goBackOneRecord).grid(row = 2, column = 0, sticky = 'w')
+        tk.Button(self, text=">>", command=self.goForwardOneRecord).grid(row = 2, column = 0, sticky = 'e')
+        tk.Button(self, text="Load Latest", command=self.searchAndLoadData).grid(row = 2, column = 1, sticky = 'e')
 
         tk.Label(self, text="Attn:").grid(row = 3, column = 0, sticky = 'e')
         tk.Entry(self, textvariable=self.attnName).grid(row = 3, column = 1, sticky = 'w')
@@ -60,6 +62,8 @@ class App(tk.Frame):
         tk.Button(self, text="Print Documents", command=self.printDocuments).grid(row = 7, column = 0, sticky = 'w')
         tk.Button(self, text="Complete and Proceed", command=self.CompleteAndProceed).grid(row = 7, column = 1, sticky = 'e')
 
+        self.searchAndLoadData()
+
     def clearEntries(self):
         self.selectedHospital.set("")
         self.attnName.set("")
@@ -71,13 +75,23 @@ class App(tk.Frame):
         self.postalCode.set("")
         return
 
+    def searchAndLoadData(self):
+        try:
+            # search for next hospital
+            found_cell = worksheet.find(nextInQueCursor)
+            self.target_row = found_cell.row
+            self.target_col = found_cell.col
+            self.loadData()
+            return
+
+        except:
+            print("No cursor found!")
+            return
+
     def loadData(self):
         try:
             self.clearEntries()
-            
-            # search for next hospital
-            self.found_cell = worksheet.find(nextInQueCursor)
-            hospital_row = worksheet.row_values(self.found_cell.row, value_render_option='UNFORMATTED_VALUE')
+            hospital_row = worksheet.row_values(self.target_row, value_render_option='UNFORMATTED_VALUE')
 
             # fill in the data
             self.selectedHospital.set(hospital_row[2])
@@ -94,14 +108,35 @@ class App(tk.Frame):
             print("Something's wrong")
             return
 
+    def goBackOneRecord(self):
+        try:
+            if(self.target_row > 2):
+                self.target_row -= 1
+                self.loadData()
+                return
+
+        except:
+            print("Cannot Go Backward!")
+            return
+
+    def goForwardOneRecord(self):
+        try:
+            self.target_row += 1
+            self.loadData()
+            return
+
+        except:
+            print("Cannot Go Forward!")
+            return
+
     def printDocuments(self):
-        printAddressLabel(self.attnName.get(), self.phoneNumber.get(), self.selectedHospital.get(), self.address.get(), self.province.get(), self.postalCode.get())
+        printAddressLabel(self.attnName.get(), self.phoneNumber.get(), self.selectedHospital.get(), self.address.get(), self.province.get(), self.postalCode.get(), copies=2)
         printDocuments(self.selectedHospital.get(), self.patientTablet.get(), self.doctorTablet.get())
         return
 
     def CompleteAndProceed(self):
-        worksheet.update_cell(self.found_cell.row, self.found_cell.col, "packed")
-        worksheet.update_cell(self.found_cell.row + 1, self.found_cell.col, nextInQueCursor)
+        worksheet.update_cell(self.target_row, self.target_col, "packed")
+        worksheet.update_cell(self.target_row + 1, self.target_col, nextInQueCursor)
         self.loadData()
         return
 
