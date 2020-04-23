@@ -86,6 +86,7 @@ class App(tk.Frame):
         self.address = tk.StringVar(self)
         self.province = tk.StringVar(self)
         self.postalCode = tk.StringVar(self)
+        self.request = tk.StringVar(self)
 
         # Text Field
         tk.Label(self, text="Hospital:").grid(row = 1, column = 0, sticky = 'e')
@@ -99,13 +100,16 @@ class App(tk.Frame):
         tk.Label(self, text="Phone No.:").grid(row = 4, column = 0, sticky = 'e')
         tk.Label(self, textvariable=self.phoneNumber, width=30).grid(row = 4, column = 1, sticky = 'w')
 
-        tk.Button(self, text="Print Documents", command=self.printDocuments).grid(row = 5, column = 1, sticky = 'e')
+        #tk.Button(self, text="Print Documents", command=self.printDocuments).grid(row = 5, column = 1, sticky = 'e')
 
         tk.Label(self, text="Patient Table").grid(row = 6, column = 1, sticky = 'w')
         tk.Label(self, textvariable=self.patientTablet, font=tkFont.Font(size=26)).grid(row = 7, rowspan = 3, column = 1, sticky = 'w')
 
         tk.Label(self, text="Doctor Tablet").grid(row = 6, column = 1, sticky = 'e')
         tk.Label(self, textvariable=self.doctorTablet, font=tkFont.Font(size=26)).grid(row = 7, rowspan = 3, column = 1, sticky = 'e')
+
+        tk.Label(self, text="Request:").grid(row = 10, column = 0, sticky = 'e')
+        tk.Label(self, textvariable=self.request, width=30).grid(row = 10, column = 1, sticky = 'w')
 
         
 
@@ -194,7 +198,7 @@ class App(tk.Frame):
         # Status Text
         self.statusText = tk.StringVar()
         self.statusText.set("Ready to seach...")
-        self.status = tk.Entry(self, textvariable=self.statusText, width=70, state='disabled')
+        self.status = tk.Entry(self, textvariable=self.statusText, width=100, state='disabled')
         self.status.grid(row=15,column=0, columnspan=4, sticky="ws")
 
         # Binding
@@ -222,6 +226,9 @@ class App(tk.Frame):
             self.doctorTablet.set(hospital_row[8])
             self.patientTablet.set(hospital_row[9])
 
+            if(len(hospital_row) > 13):
+                self.request.set(hospital_row[13])
+
             # fill in location field
             self.target_location_string.set(hospital_row[10])
             self.target_sub_location_string.set(hospital_row[11])
@@ -233,18 +240,18 @@ class App(tk.Frame):
             print("Something's wrong")
             return
 
-    def printDocuments(self):
-        if (self.selectedHospital.get() == ''):
-            self.statusText.set("Cannot Print: Load Data First!")
-            return
+    # def printDocuments(self):
+    #     if (self.selectedHospital.get() == ''):
+    #         self.statusText.set("Cannot Print: Load Data First!")
+    #         return
 
-        printAddressLabel(self.attnName.get(), self.phoneNumber.get(), self.selectedHospital.get(), self.address.get(), self.province.get(), self.postalCode.get())
-        printDocuments(self.selectedHospital.get(), self.patientTablet.get(), self.doctorTablet.get())
-        return
+    #     printAddressLabel(self.attnName.get(), self.phoneNumber.get(), self.selectedHospital.get(), self.address.get(), self.province.get(), self.postalCode.get())
+    #     printDocuments(self.selectedHospital.get(), self.patientTablet.get(), self.doctorTablet.get())
+    #     return
 
     def CompleteAndProceed(self):
         try:
-            shippingWorksheet.update_cell(self.found_cell.row, self.found_cell.col, "packed")
+            shippingWorksheet.update_cell(self.found_cell.row, self.found_cell.col, devicePreparedCursor)
             shippingWorksheet.update_cell(self.found_cell.row + 1, self.found_cell.col, nextInQueCursor)
             self.loadData()
             self.statusText.set("Proceeded to next data in que.")
@@ -277,6 +284,7 @@ class App(tk.Frame):
                 self.address.set("")
                 self.province.set("")
                 self.postalCode.set("")
+                self.request.set("")
                 del self.found_cell #can cause AttributeError (must be last operation)
 
             return
@@ -354,7 +362,7 @@ class App(tk.Frame):
 # GUI settings
 root = tk.Tk()
 app = App(root)
-root.title("COVID-19 Tablet Location Update")
+root.title("COVID-19 Tablet Location Set and Print")
 root.minsize(200, 200)
 
 # Initalize GUI
