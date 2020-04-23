@@ -59,8 +59,13 @@ def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, loc
 
     return
 
-def printAddressLabel(name_str, phoneNumber_str, hospitalName_str, address_str, province_str, zipcode_str, copies = 1):
+def printAddressLabel(name_str, phoneNumber_str, hospitalName_str, address_str, province_str, zipcode_str, bestowed_yes_no, copies = 1):
     
+    if (bestowed_yes_no == "Yes"):
+      bestowed = "B"
+    else:
+      bestowed = ""
+
     html_str = """
     <html>
     <body>
@@ -72,10 +77,13 @@ def printAddressLabel(name_str, phoneNumber_str, hospitalName_str, address_str, 
           <tr>
             <td><p style="font-size:28px; margin:0; padding:0; text-align:center">{2} {3} {4} {5}</p></td>
           </tr>
+          <tr>
+            <td><p style="font-size:28px; font-weight:bold; margin:0; padding-right:5px; padding:0px;">{6}</p></td>
+          </tr>
         </table>
     </font>
     </body>
-    </html>""".format(name_str, phoneNumber_str, hospitalName_str, address_str, province_str, zipcode_str)
+    </html>""".format(name_str, phoneNumber_str, hospitalName_str, address_str, province_str, zipcode_str, bestowed)
 
     sticker_html= open("address.html","w")
     sticker_html.write(html_str)

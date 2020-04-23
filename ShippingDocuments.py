@@ -34,6 +34,7 @@ class App(tk.Frame):
         self.phoneNumber = tk.StringVar(self)
         self.doctorTablet = tk.StringVar(self)
         self.patientTablet = tk.StringVar(self)
+        self.bestowed = tk.StringVar(self)
 
         #not showing
         self.address = tk.StringVar(self)
@@ -41,26 +42,41 @@ class App(tk.Frame):
         self.postalCode = tk.StringVar(self)
 
         tk.Label(self, text="Hospital:").grid(row = 1, column = 0, sticky = 'e')
-        tk.Entry(self, textvariable=self.selectedHospital).grid(row = 1, column = 1, sticky = 'w')
+        tk.Entry(self, textvariable=self.selectedHospital, width=40).grid(row = 1, column = 1, sticky = 'w')
 
         tk.Button(self, text="<<", command=self.goBackOneRecord).grid(row = 2, column = 0, sticky = 'w')
         tk.Button(self, text=">>", command=self.goForwardOneRecord).grid(row = 2, column = 0, sticky = 'e')
         tk.Button(self, text="Load Latest", command=self.searchAndLoadData).grid(row = 2, column = 1, sticky = 'e')
 
         tk.Label(self, text="Attn:").grid(row = 3, column = 0, sticky = 'e')
-        tk.Entry(self, textvariable=self.attnName).grid(row = 3, column = 1, sticky = 'w')
+        tk.Entry(self, textvariable=self.attnName, width=40).grid(row = 3, column = 1, sticky = 'w')
 
         tk.Label(self, text="Phone No.:").grid(row = 4, column = 0, sticky = 'e')
-        tk.Entry(self, textvariable=self.phoneNumber).grid(row = 4, column = 1, sticky = 'w')
+        tk.Entry(self, textvariable=self.phoneNumber, width=40).grid(row = 4, column = 1, sticky = 'w')
 
         tk.Label(self, text="Doctor Tablet:").grid(row = 5, column = 0, sticky = 'e')
-        tk.Entry(self, textvariable=self.doctorTablet).grid(row = 5, column = 1, sticky = 'w')
+        tk.Entry(self, textvariable=self.doctorTablet, width=40).grid(row = 5, column = 1, sticky = 'w')
 
         tk.Label(self, text="Patient Tablet:").grid(row = 6, column = 0, sticky = 'e')
-        tk.Entry(self, textvariable=self.patientTablet).grid(row = 6, column = 1, sticky = 'w')
+        tk.Entry(self, textvariable=self.patientTablet, width=40).grid(row = 6, column = 1, sticky = 'w')
 
-        tk.Button(self, text="Print Documents", command=self.printDocuments).grid(row = 7, column = 0, sticky = 'w')
-        tk.Button(self, text="Complete and Proceed", command=self.CompleteAndProceed).grid(row = 7, column = 1, sticky = 'e')
+        tk.Label(self, text="Bestowed:").grid(row = 7, column = 0, sticky = 'e')
+        tk.Entry(self, textvariable=self.bestowed, width=40).grid(row = 7, column = 1, sticky = 'w')
+
+        # Print Addess
+        self.printAddressLabel = tk.IntVar()
+        self.printAddressLabel.set(1)
+        checkButton = tk.Checkbutton(self, text="Print Address", variable=self.printAddressLabel)
+        checkButton.grid(row=8, column = 1, sticky="w")
+
+        # Print Documents
+        self.printDocuments = tk.IntVar()
+        self.printDocuments.set(1)
+        checkButton = tk.Checkbutton(self, text="Print Documents", variable=self.printDocuments)
+        checkButton.grid(row=8, column = 1, sticky="e")
+
+        tk.Button(self, text="Print Selected Documents", command=self.sendPrintCommand).grid(row = 9, column = 1, sticky = 'e')
+        tk.Button(self, text="Complete and Proceed", command=self.CompleteAndProceed).grid(row = 10, column = 1, sticky = 'e')
 
         self.searchAndLoadData()
 
@@ -73,12 +89,13 @@ class App(tk.Frame):
         self.address.set("")
         self.province.set("")
         self.postalCode.set("")
+        self.bestowed.set("")
         return
 
     def searchAndLoadData(self):
         try:
             # search for next hospital
-            found_cell = worksheet.find(nextInQueCursor)
+            found_cell = worksheet.find(devicePreparedCursor)
             self.target_row = found_cell.row
             self.target_col = found_cell.col
             self.loadData()
@@ -102,6 +119,13 @@ class App(tk.Frame):
             self.postalCode.set(hospital_row[7])
             self.doctorTablet.set(hospital_row[8])
             self.patientTablet.set(hospital_row[9])
+
+            if (hospital_row[12] == 1):
+                bestowedText = "Yes"
+            else:
+                bestowedText = "No"
+
+            self.bestowed.set(bestowedText)
             return
         
         except:
@@ -129,21 +153,23 @@ class App(tk.Frame):
             print("Cannot Go Forward!")
             return
 
-    def printDocuments(self):
-        printAddressLabel(self.attnName.get(), self.phoneNumber.get(), self.selectedHospital.get(), self.address.get(), self.province.get(), self.postalCode.get(), copies=2)
-        printDocuments(self.selectedHospital.get(), self.patientTablet.get(), self.doctorTablet.get())
+    def sendPrintCommand(self):
+        if(self.printAddressLabel):
+            printAddressLabel(self.attnName.get(), self.phoneNumber.get(), self.selectedHospital.get(), self.address.get(), self.province.get(), self.postalCode.get(), self.bestowed.get(), copies=2)
+
+        if(self.printDocuments):
+            printDocuments(self.selectedHospital.get(), self.patientTablet.get(), self.doctorTablet.get())
         return
 
     def CompleteAndProceed(self):
-        worksheet.update_cell(self.target_row, self.target_col, "packed")
-        worksheet.update_cell(self.target_row + 1, self.target_col, nextInQueCursor)
-        self.loadData()
+        worksheet.update_cell(self.target_row, self.target_col, documentPrintedCursor)
+        self.searchAndLoadData()
         return
 
 # GUI settings
 root = tk.Tk()
 app = App(root)
-root.title("Address Label Printer")
+root.title("Document Printing")
 root.minsize(200, 200)
 
 # Initalize GUI

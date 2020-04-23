@@ -27,3 +27,5 @@ cellularOperatorPrefix = {
 
 # Shipping cursor
 nextInQueCursor = "nextInQue"
+devicePreparedCursor = "deviceReady"
+documentPrintedCursor = "documentPrinted"
