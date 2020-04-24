@@ -5,8 +5,11 @@ from pystrich.datamatrix import DataMatrixEncoder
 from pystrich.code128 import Code128Encoder
 from components.thaiDateTime import *
 from components.shipOutLetterFormat import *
+from components.shipOutLetterChaiPattanaFormat import *
 from components.responseLetterFormat import *
+from components.responseLetterChaiPattanaFormat import *
 from components.tabletLabelFormat import *
+from components.pintoLabelFormat import *
 from config import *
 
 def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, location_str, subLocation_str = '', deviceMode_str = '', copies = 1):
@@ -64,7 +67,7 @@ def printAddressLabel(name_str, phoneNumber_str, hospitalName_str, address_str, 
     if (bestowed_yes_no == "Yes"):
       bestowed = "B"
     else:
-      bestowed = ""
+      bestowed = "N"
 
     html_str = """
     <html>
@@ -105,15 +108,21 @@ def printAddressLabel(name_str, phoneNumber_str, hospitalName_str, address_str, 
     os.remove("address_label.pdf")
     return
 
-def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount):
+def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount, chaiPattana):
 
     letter = open("outLetter.html","w")
     thaiDate = thai_strftime(datetime.datetime.now(), "%d %B %y")
-    letter.write(outLetter.format(hospitalName, patientTabletAmount, doctorTabletAmount, thaiDate))
+    if (chaiPattana):
+      letter.write(outLetterChaiPattana.format(hospitalName, patientTabletAmount, doctorTabletAmount, thaiDate))
+    else:
+      letter.write(outLetter.format(hospitalName, patientTabletAmount, doctorTabletAmount, thaiDate))
     letter.close()
 
     response = open("responseLetter.html","w")
-    response.write(responseLetter.format(hospitalName, patientTabletAmount, doctorTabletAmount))
+    if (chaiPattana):
+      response.write(responseLetterChaiPattana.format(hospitalName, patientTabletAmount, doctorTabletAmount))
+    else:
+      response.write(responseLetter.format(hospitalName, patientTabletAmount, doctorTabletAmount))
     response.close()
 
     options = {
@@ -126,7 +135,7 @@ def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount):
         'zoom' : 1.5
     }
     pdfkit.from_file('outLetter.html', 'outLetter.pdf', options=options)
-    pdfkit.from_file('responseLetter.html', 'responseLetter.pdf', options=options)
+    pdfkit.from_file('responseLetter.html', "responseLetter.pdf", options=options)
 
     # Print
     printTerminalCommand = "lpr -P {} outLetter.pdf responseLetter.pdf".format(standardA4Printer)
@@ -138,4 +147,33 @@ def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount):
     os.remove("responseLetter.pdf")
     os.remove("outLetter.html")
     os.remove("outLetter.pdf")
+    return
+
+def printPintoSerialNumberLabel(serialNumber, videoGroup, controlNumber, copies = 1):
+    serialNumberDataMatrix = DataMatrixEncoder(serialNumber)
+    serialNumberDataMatrix.save("pintoSNDataMatrix.png")
+
+    sticker_html= open("pintoSticker.html","w")
+    sticker_html.write(pintoLabel.format(serialNumber, videoGroup, controlNumber))
+    sticker_html.close()
+
+    options = {'page-width' : '80mm', 
+               'page-height' : '50mm',
+               'margin-top': '0mm',
+               'margin-right': '0mm',
+               'margin-bottom': '0mm',
+               'margin-left': '0mm',
+               'encoding' : 'utf8'}
+    pdfkit.from_file('pintoSticker.html', 'pintoSticker.pdf', options=options)
+    fileToPrint = "pintoSticker.pdf"
+
+    # Print
+    printTerminalCommand = "lpr -P {0} -o Darkness={1} -o page-ranges=1 -# {2} {3}".format(tabletLabelPrinter, darknessLevel, copies, fileToPrint)
+    os.system(printTerminalCommand)
+
+    # Clean up
+    os.remove("pintoSNDataMatrix.png")
+    os.remove("pintoSticker.html")
+    os.remove("pintoSticker.pdf")
+
     return

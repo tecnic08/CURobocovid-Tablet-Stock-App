@@ -154,11 +154,15 @@ class App(tk.Frame):
             return
 
     def sendPrintCommand(self):
-        if(self.printAddressLabel):
+        if(self.printAddressLabel.get() == 1):
             printAddressLabel(self.attnName.get(), self.phoneNumber.get(), self.selectedHospital.get(), self.address.get(), self.province.get(), self.postalCode.get(), self.bestowed.get(), copies=2)
 
-        if(self.printDocuments):
-            printDocuments(self.selectedHospital.get(), self.patientTablet.get(), self.doctorTablet.get())
+        chaiPattana = False
+        if (self.bestowed.get() == "Yes"):
+            chaiPattana = True
+
+        if(self.printDocuments.get() == 1):
+            printDocuments(self.selectedHospital.get(), self.patientTablet.get(), self.doctorTablet.get(), chaiPattana)
         return
 
     def CompleteAndProceed(self):
