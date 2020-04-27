@@ -102,7 +102,10 @@ class App(tk.Frame):
             return
 
         except:
-            print("No cursor found!")
+            print("No cursor found! Using first row.")
+            self.target_row = 2
+            self.target_col = 1
+            self.loadData()
             return
 
     def loadData(self):
