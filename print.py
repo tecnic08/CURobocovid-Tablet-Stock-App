@@ -10,6 +10,7 @@ from components.responseLetterFormat import *
 from components.responseLetterChaiPattanaFormat import *
 from components.tabletLabelFormat import *
 from components.pintoLabelFormat import *
+from components.pintoRemoteFPVLabel import *
 from config import *
 
 def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, location_str, subLocation_str = '', deviceMode_str = '', copies = 1):
@@ -175,5 +176,35 @@ def printPintoSerialNumberLabel(serialNumber, videoGroup, controlNumber, copies 
     os.remove("pintoSNDataMatrix.png")
     os.remove("pintoSticker.html")
     os.remove("pintoSticker.pdf")
+
+    return
+
+def printPintoRemoteSerialNumberLabel(serialNumber, videoGroup, copies = 1):
+    serialNumberDataMatrix = DataMatrixEncoder(serialNumber)
+    serialNumberDataMatrix.save("pintoSNDataMatrix.png")
+
+    sticker_html= open("pintoRemoteLabel.html","w")
+    sticker_html.write(pintoRemoteFPVLabel.format(serialNumber, videoGroup))
+    sticker_html.close()
+
+    options = {'page-width' : '100mm', 
+               'page-height' : '25mm',
+               'margin-top': '0mm',
+               'margin-right': '0mm',
+               'margin-bottom': '0mm',
+               'margin-left': '0mm',
+               'encoding' : 'utf8',
+               'zoom':'0.57'}
+    pdfkit.from_file('pintoRemoteLabel.html', 'pintoRemoteLabel.pdf', options=options)
+    fileToPrint = "pintoRemoteLabel.pdf"
+
+    # Print
+    printTerminalCommand = "lpr -P {0} -o Darkness={1} -o page-ranges=1 -# {2} {3}".format(tabletLabelPrinter, darknessLevel, copies, fileToPrint)
+    os.system(printTerminalCommand)
+
+    # Clean up
+    os.remove("pintoSNDataMatrix.png")
+    os.remove("pintoRemoteLabel.html")
+    os.remove("pintoRemoteLabel.pdf")
 
     return
