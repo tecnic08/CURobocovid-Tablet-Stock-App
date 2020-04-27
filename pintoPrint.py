@@ -6,7 +6,7 @@ from components.pintoLabelFormat import *
 from components.pintoRemoteFPVLabel import *
 from config import *
 
-def createPintoLabel(serialStart, serialEnd, videoStart, lotName, print=False):
+def createPintoLabel(serialStart, serialEnd, videoStart, lotName):
     videoGroup = {
         0 : "D",    # We will use mod, so last group must be ZERO
         1 : "A",
@@ -14,16 +14,10 @@ def createPintoLabel(serialStart, serialEnd, videoStart, lotName, print=False):
         3 : "C"
     }
 
-    #printTerminalCommand = "lpr -P {0} -o Darkness={1} -o page-ranges=1".format(tabletLabelPrinter, darknessLevel)
-
     for serialNumber in range(serialStart, serialEnd + 1):
         generatePintoSerialNumberLabel(serialNumber, videoGroup[videoStart % len(videoGroup)], lotName)
         generatePintoRemoteSerialNumberLabel(serialNumber, videoGroup[videoStart % len(videoGroup)])
         videoStart += 1
-        #printTerminalCommand =  printTerminalCommand + " pinto{0}.pdf".format(serialNumber) + " remote{0}.pdf".format(serialNumber)
-    
-    #if(print):
-    #    os.system(printTerminalCommand)
 
     return
 
