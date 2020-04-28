@@ -109,14 +109,15 @@ def printAddressLabel(name_str, phoneNumber_str, hospitalName_str, address_str, 
     os.remove("address_label.pdf")
     return
 
-def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount, chaiPattana):
+def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount, chaiPattana, documentNumber = ""):
 
     letter = open("outLetter.html","w")
+
     thaiDate = thai_strftime(datetime.datetime.now(), "%d %B %y")
     if (chaiPattana):
-      letter.write(outLetterChaiPattana.format(hospitalName, patientTabletAmount, doctorTabletAmount, thaiDate))
+      letter.write(outLetterChaiPattana.format(hospitalName, patientTabletAmount, doctorTabletAmount, thaiDate, documentNumber))
     else:
-      letter.write(outLetter.format(hospitalName, patientTabletAmount, doctorTabletAmount, thaiDate))
+      letter.write(outLetter.format(hospitalName, patientTabletAmount, doctorTabletAmount, thaiDate, documentNumber))
     letter.close()
 
     response = open("responseLetter.html","w")
