@@ -1,6 +1,7 @@
 import os
 import imgkit
 import pdfkit
+from pathlib import Path
 from pystrich.datamatrix import DataMatrixEncoder
 from pystrich.code128 import Code128Encoder
 from components.thaiDateTime import *
@@ -127,6 +128,9 @@ def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount, chaiPa
       response.write(responseLetter.format(hospitalName, patientTabletAmount, doctorTabletAmount))
     response.close()
 
+    Path("./outLetter").mkdir(parents=True, exist_ok=True)
+    Path("./responseLetter").mkdir(parents=True, exist_ok=True)
+
     options = {
         'page-size': 'A4',
         'margin-top': '0.75in',
@@ -136,19 +140,17 @@ def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount, chaiPa
         'encoding': "UTF-8",
         'zoom' : 1.5
     }
-    pdfkit.from_file('outLetter.html', 'outLetter.pdf', options=options)
-    pdfkit.from_file('responseLetter.html', "responseLetter.pdf", options=options)
+    pdfkit.from_file('outLetter.html', 'outLetter/{}.pdf'.format(hospitalName), options=options)
+    pdfkit.from_file('responseLetter.html', "responseLetter/{}.pdf".format(hospitalName), options=options)
 
     # Print
-    printTerminalCommand = "lpr -P {} outLetter.pdf responseLetter.pdf".format(standardA4Printer)
+    printTerminalCommand = "lpr -P {0} \"outLetter/{1}.pdf\" \"responseLetter/{1}.pdf\"".format(standardA4Printer, hospitalName)
 
     os.system(printTerminalCommand)
 
     # Clean up
     os.remove("responseLetter.html")
-    os.remove("responseLetter.pdf")
     os.remove("outLetter.html")
-    os.remove("outLetter.pdf")
     return
 
 def printPintoSerialNumberLabel(serialNumber, videoGroup, controlNumber, copies = 1):
