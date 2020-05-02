@@ -25,31 +25,6 @@ shippingWorksheet = shippingSheet.worksheet("computerReadable")
 
 print("Connected to " + useDatabase)
 
-column_definition = {
-    1: 'Updated Time',
-    2: 'IMEI',
-    3: 'Serial Number',
-    4: 'Phone Number',
-    5: 'ICCID',
-    6: 'Location',
-    7: 'Sub Location',
-    8: 'Project',
-    9: 'Mode',
-    10: 'Cellular Operator'
-}
-
-deviceModeOptions = [
-    'Patient',
-    'Doctor',
-    'Development'
-]
-
-projectOptions = [
-    'Telepresence',
-    'Pinto',
-    'Development'
-]
-
 def popup(title, msg):
     '''Open popup window with title and msg'''
     w = tk.Toplevel(root)

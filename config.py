@@ -29,3 +29,31 @@ cellularOperatorPrefix = {
 nextInQueCursor = "nextInQue"
 devicePreparedCursor = "deviceReady"
 documentPrintedCursor = "documentPrinted"
+
+# Database
+column_definition = {
+    1: 'Updated Time',
+    2: 'IMEI',
+    3: 'Serial Number',
+    4: 'Phone Number',
+    5: 'ICCID',
+    6: 'Location',
+    7: 'Sub Location',
+    8: 'Project',
+    9: 'Mode',
+    10: 'Cellular Operator'
+}
+
+deviceModeOptions = [
+    'Patient',
+    'Doctor',
+    'Development',
+    'Undefined'
+]
+
+projectOptions = [
+    'Telepresence',
+    'Pinto',
+    'Development',
+    'Undefined'
+]
