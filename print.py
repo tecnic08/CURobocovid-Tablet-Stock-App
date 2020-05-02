@@ -14,7 +14,7 @@ from components.pintoLabelFormat import *
 from components.pintoRemoteFPVLabel import *
 from config import *
 
-def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, location_str, subLocation_str = '', deviceMode_str = '', copies = 1):
+def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, location_str, subLocation_str = '', deviceMode_str = '', copies = 1, printSupportLabel = 'auto'):
     imeiDataMatrix = DataMatrixEncoder(imei_str)
     imeiDataMatrix.save("imei.png")
 
@@ -24,7 +24,7 @@ def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, loc
     iccidCode128 = Code128Encoder(iccid_str, options = {"show_label" : False})
     iccidCode128.save("iccid.png")
 
-    printSupportLabel = (deviceMode_str == "Doctor")
+    supportLabel = (deviceMode_str == "Doctor") and (printSupportLabel == "auto")
 
     # Add suffix to device
     if (deviceMode_str != ''):
@@ -43,7 +43,7 @@ def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, loc
     pdfkit.from_file('sticker.html', 'sticker.pdf', options=options)
     fileToPrint = "sticker.pdf"
 
-    if (printSupportLabel):
+    if (supportLabel):
       options = {'page-width' : '80mm', 'page-height' : '50mm', 'margin-top': '3mm', 'margin-right': '0mm','margin-bottom': '2mm', 'margin-left': '0mm', 'encoding':'utf8'}
       pdfkit.from_file("components/supportLabel.html", "supportLabel.pdf", options=options)
       fileToPrint = fileToPrint + " supportLabel.pdf"
@@ -59,7 +59,7 @@ def generateAndPrint(imei_str, serialNumber_str, phoneNumber_str, iccid_str, loc
     os.remove("sticker.html")
     os.remove("sticker.pdf")
 
-    if (printSupportLabel):
+    if (supportLabel):
       os.remove("supportLabel.pdf")
 
     return
