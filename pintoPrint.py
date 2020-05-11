@@ -192,3 +192,74 @@ def printRemoteLabel(serialStart,serialEnd):
 #     pdfkit.from_file('pintoOutLetter.html', 'pintoReplyLetter/{}'.format(outputFile), options=options)
     
 #     return outputFile
+
+def generateMotorLabel():
+
+    print("Connecting to Google Drive API...")
+
+    # use creds to create a client to interact with the Google Drive API
+    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+    creds = ServiceAccountCredentials.from_json_keyfile_name(clientCredentialFile, scope)
+    client = gspread.authorize(creds)
+
+    # Find a workbook by name and open the first sheet
+    # Make sure you use the right name here.
+    sheet = client.open("COVID19_Qx_BOM")
+
+    # Extract and print all of the values
+    worksheet = sheet.worksheet("RPM for print")
+
+    listToPrint = worksheet.get_all_values()
+    print("Obtained list to print")
+
+    options = {'page-width' : '100mm', 
+                'page-height' : '25mm',
+                'margin-top': '0mm',
+                'margin-right': '0mm',
+                'margin-bottom': '0mm',
+                'margin-left': '0mm',
+                'encoding' : 'utf8',
+                'zoom':'0.57'}
+
+    print("Generating PDFs")
+    fileToPrint = ""
+
+    for i in listToPrint:
+        sticker_html= open("motorLabel.html","w")
+        sticker_html.write("""
+        <html>
+        <body>
+            <table width = "400px" height = "200px" style="font-family: TH Sarabun New; font-size:20px; float:left">
+                <tr>
+                    <td><font style="font-size:60px; font-weight:bold;"><center>{0}</font></td>
+                </tr>
+            </table>
+            <table width = "400px" height = "200px" style="font-family: TH Sarabun New; font-size:20px; float:left">
+                <tr>
+                    <td><font style="font-size:60px; font-weight:bold;"><center>{1}</font></td>
+                </tr>
+            </table>
+            </table>
+        </body>
+        </html>""".format(i[0], i[1]))
+        sticker_html.close()
+
+        outputFileName = "motorLabel/motor{0}.pdf".format(i)
+
+        fileToPrint = fileToPrint + "\"{}\" ".format(outputFileName)
+
+        pdfkit.from_file('motorLabel.html', outputFileName, options=options)
+        # Clean up
+        os.remove("motorLabel.html")
+
+    print("Generated all Label")
+    printTerminalCommand = "lpr -P {0} -o Darkness={1} -o page-ranges=1 {2}".format(tabletLabelPrinter, darknessLevel, fileToPrint)
+    
+    inp = input("Press P to start the print or other key exit.")
+
+    if (inp == 'p' or inp == 'P'):
+        os.system(printTerminalCommand)
+        print("Print command sent.")
+    
+    print("Done, bye.")
+    return
