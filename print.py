@@ -110,22 +110,31 @@ def printAddressLabel(name_str, phoneNumber_str, hospitalName_str, address_str, 
     os.remove("address_label.pdf")
     return
 
-def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount, chaiPattana, documentNumber = ""):
+def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount, pintoAmount, chaiPattana, documentNumber = "", showMirror = True, showPinto = True):
+
+    mirrorWording = ""
+    if (showMirror and (patientTabletAmount != "0" or doctorTabletAmount != "0")):
+      mirrorWording = mirrorOptions.format(patientTabletAmount, doctorTabletAmount)
+
+    pintoWording = ""
+    if (showPinto and pintoAmount != "0"):
+      pintoWording = pintoOptions.format(pintoAmount)
+    
+    thaiDate = thai_strftime(datetime.datetime.now(), "%d %B %y")
 
     letter = open("outLetter.html","w")
-
-    thaiDate = thai_strftime(datetime.datetime.now(), "%d %B %y")
     if (chaiPattana):
-      letter.write(outLetterChaiPattana.format(hospitalName, patientTabletAmount, doctorTabletAmount, thaiDate, documentNumber))
+      letter.write(outLetterChaiPattana.format(hospitalName, mirrorWording, pintoWording, thaiDate, documentNumber))
+
     else:
-      letter.write(outLetter.format(hospitalName, patientTabletAmount, doctorTabletAmount, thaiDate, documentNumber))
+      letter.write(outLetter.format(hospitalName, mirrorWording, pintoWording, thaiDate, documentNumber))
     letter.close()
 
     response = open("responseLetter.html","w")
     if (chaiPattana):
-      response.write(responseLetterChaiPattana.format(hospitalName, patientTabletAmount, doctorTabletAmount))
+      response.write(responseLetterChaiPattana.format(hospitalName, mirrorWording, pintoWording))
     else:
-      response.write(responseLetter.format(hospitalName, patientTabletAmount, doctorTabletAmount))
+      response.write(responseLetter.format(hospitalName, mirrorWording, pintoWording))
     response.close()
 
     Path("./outLetter").mkdir(parents=True, exist_ok=True)

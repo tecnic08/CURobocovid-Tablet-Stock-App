@@ -57,3 +57,19 @@ projectOptions = [
     'Development',
     'Undefined'
 ]
+
+# Pinto shipping database
+
+pintoColumn = {
+    'status' : 0,
+    'shipDate' : 1,
+    'hospitalName' : 2,
+    'attn' : 3,
+    'phoneNumber' : 4,
+    'address' : 5,
+    'province' : 6,
+    'postalCode' : 7,
+    'noOfPinto' : 8,
+    'chaipattana' : 9,
+    'documentNumber' : 10
+}

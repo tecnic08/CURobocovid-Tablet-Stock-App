@@ -34,6 +34,7 @@ class App(tk.Frame):
         self.phoneNumber = tk.StringVar(self)
         self.doctorTablet = tk.StringVar(self)
         self.patientTablet = tk.StringVar(self)
+        self.pinto = tk.StringVar(self)
         self.bestowed = tk.StringVar(self)
         self.documentNumber = tk.StringVar(self)
 
@@ -55,32 +56,45 @@ class App(tk.Frame):
         tk.Label(self, text="Phone No.:").grid(row = 4, column = 0, sticky = 'e')
         tk.Entry(self, textvariable=self.phoneNumber, width=40).grid(row = 4, column = 1, sticky = 'w')
 
+        self.printMirror = tk.IntVar()
+        self.printMirror.set(1)
+        checkButton = tk.Checkbutton(self, text="Print", variable=self.printMirror)
+        checkButton.grid(row = 5, column = 1, rowspan = 2, sticky="e")
+
         tk.Label(self, text="Doctor Tablet:").grid(row = 5, column = 0, sticky = 'e')
-        tk.Entry(self, textvariable=self.doctorTablet, width=40).grid(row = 5, column = 1, sticky = 'w')
+        tk.Entry(self, textvariable=self.doctorTablet, width=32).grid(row = 5, column = 1, sticky = 'w')
 
         tk.Label(self, text="Patient Tablet:").grid(row = 6, column = 0, sticky = 'e')
-        tk.Entry(self, textvariable=self.patientTablet, width=40).grid(row = 6, column = 1, sticky = 'w')
+        tk.Entry(self, textvariable=self.patientTablet, width=32).grid(row = 6, column = 1, sticky = 'w')
 
-        tk.Label(self, text="Document Number:").grid(row = 7, column = 0, sticky = 'e')
-        tk.Entry(self, textvariable=self.documentNumber, width=40).grid(row = 7, column = 1, sticky = 'w')
+        self.printPinto = tk.IntVar()
+        self.printPinto.set(1)
+        checkButton = tk.Checkbutton(self, text="Print", variable=self.printPinto)
+        checkButton.grid(row = 7, column = 1, sticky="e")
 
-        tk.Label(self, text="Bestowed:").grid(row = 8, column = 0, sticky = 'e')
-        tk.Entry(self, textvariable=self.bestowed, width=40).grid(row = 8, column = 1, sticky = 'w')
+        tk.Label(self, text="Pinto:").grid(row = 7, column = 0, sticky = 'e')
+        tk.Entry(self, textvariable=self.pinto, width=32).grid(row = 7, column = 1, sticky = 'w')
+
+        tk.Label(self, text="Document Number:").grid(row = 8, column = 0, sticky = 'e')
+        tk.Entry(self, textvariable=self.documentNumber, width=40).grid(row = 8, column = 1, sticky = 'w')
+
+        tk.Label(self, text="Bestowed:").grid(row = 9, column = 0, sticky = 'e')
+        tk.Entry(self, textvariable=self.bestowed, width=40).grid(row = 9, column = 1, sticky = 'w')
 
         # Print Addess
         self.printAddressLabel = tk.IntVar()
         self.printAddressLabel.set(1)
         checkButton = tk.Checkbutton(self, text="Print Address", variable=self.printAddressLabel)
-        checkButton.grid(row=9, column = 1, sticky="w")
+        checkButton.grid(row=10, column = 1, sticky="w")
 
         # Print Documents
         self.printDocuments = tk.IntVar()
         self.printDocuments.set(1)
         checkButton = tk.Checkbutton(self, text="Print Documents", variable=self.printDocuments)
-        checkButton.grid(row=9, column = 1, sticky="e")
+        checkButton.grid(row=10, column = 1, sticky="e")
 
-        tk.Button(self, text="Print Selected Documents", command=self.sendPrintCommand).grid(row = 10, column = 1, sticky = 'e')
-        tk.Button(self, text="Complete and Proceed", command=self.CompleteAndProceed).grid(row = 11, column = 1, sticky = 'e')
+        tk.Button(self, text="Print Selected Documents", command=self.sendPrintCommand).grid(row = 11, column = 1, sticky = 'e')
+        tk.Button(self, text="Complete and Proceed", command=self.CompleteAndProceed).grid(row = 12, column = 1, sticky = 'e')
 
         self.searchAndLoadData()
 
@@ -128,6 +142,7 @@ class App(tk.Frame):
             self.doctorTablet.set(hospital_row[8])
             self.patientTablet.set(hospital_row[9])
             self.documentNumber.set(hospital_row[14])
+            self.pinto.set(hospital_row[16])
 
             if (hospital_row[12] == 1):
                 bestowedText = "Yes"
@@ -164,14 +179,16 @@ class App(tk.Frame):
 
     def sendPrintCommand(self):
         if(self.printAddressLabel.get() == 1):
-            printAddressLabel(self.attnName.get(), self.phoneNumber.get(), self.selectedHospital.get(), self.address.get(), self.province.get(), self.postalCode.get(), self.bestowed.get(), copies=2)
+            printAddressLabel(self.attnName.get(), self.phoneNumber.get(), self.selectedHospital.get(), \
+                self.address.get(), self.province.get(), self.postalCode.get(), self.bestowed.get(), copies=2)
 
         chaiPattana = False
         if (self.bestowed.get() == "Yes"):
             chaiPattana = True
 
         if(self.printDocuments.get() == 1):
-            printDocuments(self.selectedHospital.get(), self.patientTablet.get(), self.doctorTablet.get(), chaiPattana, self.documentNumber.get())
+            printDocuments(self.selectedHospital.get(), self.patientTablet.get(), self.doctorTablet.get(), \
+                self.pinto.get(), chaiPattana, self.documentNumber.get(), bool(self.printMirror.get()), bool(self.printPinto.get()))
         return
 
     def CompleteAndProceed(self):
