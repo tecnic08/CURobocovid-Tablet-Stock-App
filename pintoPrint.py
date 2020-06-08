@@ -255,7 +255,7 @@ def generateMotorLabel():
     print("Generated all Label")
     printTerminalCommand = "lpr -P {0} -o Darkness={1} -o page-ranges=1 {2}".format(tabletLabelPrinter, darknessLevel, fileToPrint)
     
-    inp = input("Press P to start the print or other key exit.")
+    inp = input("Press P to start printing or other key to exit.")
 
     if (inp == 'p' or inp == 'P'):
         os.system(printTerminalCommand)
