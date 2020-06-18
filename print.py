@@ -8,7 +8,6 @@ from components.thaiDateTime import *
 from components.shipOutLetterFormat import *
 from components.shipOutLetterChaiPattanaFormat import *
 from components.responseLetterFormat import *
-from components.responseLetterChaiPattanaFormat import *
 from components.tabletLabelFormat import *
 from components.pintoLabelFormat import *
 from components.pintoRemoteFPVLabel import *
@@ -111,14 +110,32 @@ def printAddressLabel(name_str, phoneNumber_str, hospitalName_str, address_str, 
     return
 
 def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount, pintoAmount, chaiPattana, documentNumber = "", showMirror = True, showPinto = True):
+    
+    # Print Options
+    options = {
+        'page-size': 'A4',
+        'margin-top': '0.75in',
+        'margin-right': '0.75in',
+        'margin-bottom': '0.75in',
+        'margin-left': '0.75in',
+        'encoding': "UTF-8",
+        'zoom' : 1.5
+    }
+    
+    fileNameToPrint = ""
 
+    # Out Letter Generator
     mirrorWording = ""
     if (showMirror and (patientTabletAmount != "0" or doctorTabletAmount != "0")):
       mirrorWording = mirrorOptions.format(patientTabletAmount, doctorTabletAmount)
+    else:
+      showMirror = False
 
     pintoWording = ""
     if (showPinto and pintoAmount != "0"):
       pintoWording = pintoOptions.format(pintoAmount)
+    else:
+      showPinto = False
     
     thaiDate = thai_strftime(datetime.datetime.now(), "%d %B %y")
 
@@ -130,35 +147,43 @@ def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount, pintoA
       letter.write(outLetter.format(hospitalName, mirrorWording, pintoWording, thaiDate, documentNumber))
     letter.close()
 
-    response = open("responseLetter.html","w")
-    if (chaiPattana):
-      response.write(responseLetterChaiPattana.format(hospitalName, mirrorWording, pintoWording))
-    else:
-      response.write(responseLetter.format(hospitalName, mirrorWording, pintoWording))
-    response.close()
-
     Path("./outLetter").mkdir(parents=True, exist_ok=True)
-    Path("./responseLetter").mkdir(parents=True, exist_ok=True)
-
-    options = {
-        'page-size': 'A4',
-        'margin-top': '0.75in',
-        'margin-right': '0.75in',
-        'margin-bottom': '0.75in',
-        'margin-left': '0.75in',
-        'encoding': "UTF-8",
-        'zoom' : 1.5
-    }
     pdfkit.from_file('outLetter.html', 'outLetter/{}.pdf'.format(hospitalName), options=options)
-    pdfkit.from_file('responseLetter.html', "responseLetter/{}.pdf".format(hospitalName), options=options)
+    fileNameToPrint += '\"outLetter/{}.pdf\" '.format(hospitalName)
+
+    # Response Letter Generator
+    if (showMirror):
+      responseMirror = open("responseLetterMirror.html","w")
+      if (chaiPattana):
+        responseMirror.write(responseLetterHeadingAndFooter.format(responseLetterBodyMirrorChaiPattana.format(doctorTabletAmount, patientTabletAmount), hospitalName))
+      else:
+        responseMirror.write(responseLetterHeadingAndFooter.format(responseLetterBodyMirror.format(doctorTabletAmount, patientTabletAmount), hospitalName))
+      responseMirror.close()
+
+      Path("./responseLetterMirror").mkdir(parents=True, exist_ok=True)
+      pdfkit.from_file('responseLetterMirror.html', "responseLetterMirror/{}.pdf".format(hospitalName), options=options)
+      fileNameToPrint += '\"responseLetterMirror/{}.pdf\" '.format(hospitalName)
+
+    if (showPinto):
+      responsePinto = open("responseLetterPinto.html","w")
+      if (chaiPattana):
+        responsePinto.write(responseLetterHeadingAndFooter.format(responseLetterBodyPintoChaiPattana.format(pintoAmount), hospitalName))
+      else:
+        responsePinto.write(responseLetterHeadingAndFooter.format(responseLetterBodyPinto.format(pintoAmount), hospitalName))
+      responsePinto.close()
+
+      Path("./responseLetterPinto").mkdir(parents=True, exist_ok=True)
+      pdfkit.from_file('responseLetterPinto.html', "responseLetterPinto/{}.pdf".format(hospitalName), options=options)
+      fileNameToPrint += '\"responseLetterPinto/{}.pdf\" '.format(hospitalName)
 
     # Print
-    printTerminalCommand = "lpr -P {0} \"outLetter/{1}.pdf\" \"responseLetter/{1}.pdf\"".format(standardA4Printer, hospitalName)
+    printTerminalCommand = "lpr -P {0} {1} ".format(standardA4Printer, fileNameToPrint)
 
     os.system(printTerminalCommand)
 
     # Clean up
-    os.remove("responseLetter.html")
+    os.remove("responseLetterMirror.html")
+    os.remove("responseLetterPinto.html")
     os.remove("outLetter.html")
     return
 
