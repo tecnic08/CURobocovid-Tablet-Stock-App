@@ -6,7 +6,6 @@ from pystrich.datamatrix import DataMatrixEncoder
 from pystrich.code128 import Code128Encoder
 from components.thaiDateTime import *
 from components.shipOutLetterFormat import *
-from components.shipOutLetterChaiPattanaFormat import *
 from components.responseLetterFormat import *
 from components.tabletLabelFormat import *
 from components.pintoLabelFormat import *
@@ -124,32 +123,36 @@ def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount, pintoA
     
     fileNameToPrint = ""
 
-    # Out Letter Generator
-    mirrorWording = ""
-    if (showMirror and (patientTabletAmount != "0" or doctorTabletAmount != "0")):
-      mirrorWording = mirrorOptions.format(patientTabletAmount, doctorTabletAmount)
-    else:
-      showMirror = False
+    # Argument Sanity Check
+    showMirror = showMirror and (patientTabletAmount != "0" or doctorTabletAmount != "0")
+    showPinto = showPinto and pintoAmount != "0"
 
-    pintoWording = ""
-    if (showPinto and pintoAmount != "0"):
-      pintoWording = pintoOptions.format(pintoAmount)
-    else:
-      showPinto = False
-    
+    # Out Letter Generator
     thaiDate = thai_strftime(datetime.datetime.now(), "%d %B %y")
 
-    letter = open("outLetter.html","w")
-    if (chaiPattana):
-      letter.write(outLetterChaiPattana.format(hospitalName, mirrorWording, pintoWording, thaiDate, documentNumber))
+    if (showMirror):
+      outMirror = open("outLetterMirror.html","w")
+      if (chaiPattana):
+        outMirror.write(outLetterHeadingAndFooter.format(shipOutLetterHeadMirrorChaiPattana, shipOutLetterBodyMirrorChaiPattana.format(hospitalName, doctorTabletAmount, patientTabletAmount), thaiDate, documentNumber))
+      else:
+        outMirror.write(outLetterHeadingAndFooter.format(shipOutLetterHeadMirror, shipOutLetterBodyMirror.format(hospitalName, doctorTabletAmount, patientTabletAmount), thaiDate, documentNumber))
+      outMirror.close()
 
-    else:
-      letter.write(outLetter.format(hospitalName, mirrorWording, pintoWording, thaiDate, documentNumber))
-    letter.close()
+      Path("./outLetterMirror").mkdir(parents=True, exist_ok=True)
+      pdfkit.from_file('outLetterMirror.html', "outLetterMirror/{}.pdf".format(hospitalName), options=options)
+      fileNameToPrint += '\"outLetterMirror/{}.pdf\" '.format(hospitalName)
 
-    Path("./outLetter").mkdir(parents=True, exist_ok=True)
-    pdfkit.from_file('outLetter.html', 'outLetter/{}.pdf'.format(hospitalName), options=options)
-    fileNameToPrint += '\"outLetter/{}.pdf\" '.format(hospitalName)
+    if (showPinto):
+      outPinto = open("outLetterPinto.html","w")
+      if (chaiPattana):
+        outPinto.write(outLetterHeadingAndFooter.format(shipOutLetterHeadPintoChaiPattana, shipOutLetterBodyPintoChaiPattana.format(hospitalName, pintoAmount), thaiDate, documentNumber))
+      else:
+        outPinto.write(outLetterHeadingAndFooter.format(shipOutLetterHeadPinto, shipOutLetterBodyPinto.format(hospitalName, pintoAmount), thaiDate, documentNumber))
+      outPinto.close()
+
+      Path("./outLetterPinto").mkdir(parents=True, exist_ok=True)
+      pdfkit.from_file('outLetterPinto.html', "outLetterPinto/{}.pdf".format(hospitalName), options=options)
+      fileNameToPrint += '\"outLetterPinto/{}.pdf\" '.format(hospitalName)
 
     # Response Letter Generator
     if (showMirror):
@@ -182,9 +185,14 @@ def printDocuments(hospitalName, patientTabletAmount, doctorTabletAmount, pintoA
     os.system(printTerminalCommand)
 
     # Clean up
-    os.remove("responseLetterMirror.html")
-    os.remove("responseLetterPinto.html")
-    os.remove("outLetter.html")
+    if (showMirror):
+      os.remove("responseLetterMirror.html")
+      os.remove("outLetterMirror.html")
+
+    if (showPinto):
+      os.remove("responseLetterPinto.html")
+      os.remove("outLetterPinto.html")
+
     return
 
 def printPintoSerialNumberLabel(serialNumber, videoGroup, controlNumber, copies = 1):

@@ -29,6 +29,7 @@ cellularOperatorPrefix = {
 nextInQueCursor = "nextInQue"
 devicePreparedCursor = "deviceReady"
 documentPrintedCursor = "documentPrinted"
+documentReprintCursor = "documentReprint"
 
 # Database
 column_definition = {

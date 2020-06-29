@@ -49,6 +49,7 @@ class App(tk.Frame):
         tk.Button(self, text="<<", command=self.goBackOneRecord).grid(row = 2, column = 0, sticky = 'w')
         tk.Button(self, text=">>", command=self.goForwardOneRecord).grid(row = 2, column = 0, sticky = 'e')
         tk.Button(self, text="Load Latest", command=self.searchAndLoadData).grid(row = 2, column = 1, sticky = 'e')
+        tk.Button(self, text="Autorun", command=self.autoGenerate).grid(row = 2, column = 1, sticky = 'w')
 
         tk.Label(self, text="Attn:").grid(row = 3, column = 0, sticky = 'e')
         tk.Entry(self, textvariable=self.attnName, width=40).grid(row = 3, column = 1, sticky = 'w')
@@ -118,14 +119,14 @@ class App(tk.Frame):
             self.target_row = found_cell.row
             self.target_col = found_cell.col
             self.loadData()
-            return
+            return True
 
         except:
             print("No cursor found! Using first row.")
             self.target_row = 2
             self.target_col = 1
             self.loadData()
-            return
+            return False
 
     def loadData(self):
         try:
@@ -194,6 +195,12 @@ class App(tk.Frame):
     def CompleteAndProceed(self):
         worksheet.update_cell(self.target_row, self.target_col, documentPrintedCursor)
         self.searchAndLoadData()
+        return
+
+    def autoGenerate(self):
+        while self.searchAndLoadData():
+            self.sendPrintCommand()
+            worksheet.update_cell(self.target_row, self.target_col, documentPrintedCursor)
         return
 
 # GUI settings
